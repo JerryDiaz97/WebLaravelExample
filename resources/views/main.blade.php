@@ -8,13 +8,13 @@
     <meta name="description" content="Sistema Ventas Laravel Vue Js- IncanatoIT">
     <meta name="author" content="Incanatoit.com">
     <meta name="keyword" content="Sistema ventas Laravel Vue Js, Sistema compras Laravel Vue Js">
-    <link rel="shortcut icon" href="vendors/img/favicon.png">
+    <link rel="shortcut icon" href="img/favicon.png">
     <title>Sistema Ventas - IncanatoIT</title>
     <!-- Icons -->
-    <link href="vendors/css/font-awesome.min.css" rel="stylesheet">
-    <link href="vendors/css/simple-line-icons.min.css" rel="stylesheet">
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/simple-line-icons.min.css" rel="stylesheet">
     <!-- Main styles for this application -->
-    <link href="vendors/css/style.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body class="app header-fixed sidebar-fixed aside-menu-fixed aside-menu-hidden">
@@ -56,7 +56,7 @@
             </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle nav-link" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
-                    <img src="vendors/img/avatars/6.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
+                    <img src="img/avatars/6.jpg" class="img-avatar" alt="admin@bootstrapmaster.com">
                     <span class="d-md-down-none">admin </span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
@@ -146,7 +146,7 @@
             <button class="sidebar-minimizer brand-minimizer" type="button"></button>
         </div>
 
-        <!-- Contenido Principal -->
+        <!-- Main Content -->
         <main class="main">
             <!-- Breadcrumb -->
             <ol class="breadcrumb">
@@ -155,7 +155,7 @@
                 <li class="breadcrumb-item active">Dashboard</li>
             </ol>
             <div class="container-fluid">
-                <!-- Ejemplo de tabla Listado -->
+                <!-- Example Listing table -->
                 <div class="card">
                     <div class="card-header">
                         <i class="fa fa-align-justify"></i> Categorías
@@ -287,9 +287,9 @@
                         </nav>
                     </div>
                 </div>
-                <!-- Fin ejemplo de tabla Listado -->
+                <!-- End listing table example -->
             </div>
-            <!--Inicio del modal agregar/actualizar-->
+            <!--Start of the modal add/update-->
             <div class="modal fade" id="modalNuevo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
                 <div class="modal-dialog modal-primary modal-lg" role="document">
                     <div class="modal-content">
@@ -325,8 +325,8 @@
                 </div>
                 <!-- /.modal-dialog -->
             </div>
-            <!--Fin del modal-->
-            <!-- Inicio del modal Eliminar -->
+            <!--Modal end-->
+            <!-- Start of the modal Delete -->
             <div class="modal fade" id="modalEliminar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
                 <div class="modal-dialog modal-danger" role="document">
                     <div class="modal-content">
@@ -348,9 +348,9 @@
                 </div>
                 <!-- /.modal-dialog -->
             </div>
-            <!-- Fin del modal Eliminar -->
+            <!-- End modal Delete -->
         </main>
-        <!-- /Fin del contenido principal -->
+        <!-- /End of the main content -->
     </div>
 
     
@@ -361,14 +361,14 @@
     </footer>
 
     <!-- Bootstrap and necessary plugins -->
-    <script src="vendors/js/jquery.min.js"></script>
-    <script src="vendors/js/popper.min.js"></script>
-    <script src="vendors/js/bootstrap.min.js"></script>
-    <script src="vendors/js/pace.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/pace.min.js"></script>
     <!-- Plugins and scripts required by all views -->
-    <script src="vendors/js/Chart.min.js"></script>
+    <script src="js/Chart.min.js"></script>
     <!-- GenesisUI main scripts -->
-    <script src="vendors/js/template.js"></script>
+    <script src="js/template.js"></script>
 </body>
 
 </html>
