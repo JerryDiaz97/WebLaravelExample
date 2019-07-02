@@ -71,23 +71,14 @@
                         </table>
                         <nav>
                             <ul class="pagination">
-                                <li class="page-item">
-                                    <a class="page-link" href="#">Ant</a>
+                                <li class="page-item" v-if="pagination.current_page > 1">
+                                    <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page - 1)">Ant</a>
                                 </li>
-                                <li class="page-item active">
-                                    <a class="page-link" href="#">1</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">2</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">3</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">4</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">Sig</a>
+                                <li class="page-item" v-for="page in pagesNumber" :key="page" :class="[page == isActived ? 'active' : '']">
+                                    <a class="page-link" href="#" @click.prevent="changePage(page)" v-text="page"></a>
+                                </li> 
+                                <li class="page-item" v-if="pagination.current_page < pagination.last_page">
+                                    <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page + 1)">Sig</a>
                                 </li>
                             </ul>
                         </nav>
@@ -178,8 +169,11 @@
                 var url = '/category?page=' + page;
 
                 axios.get(url).then(function (response) {
+                    var answer = response.data
                     console.log(response.data)
-                    me.arrayCategory = response.data.categories.data;
+                    //me.arrayCategory = response.data.categories.data;
+                    me.arrayCategory = answer.categories.data;
+                    me.pagination = answer.pagination;
                 })
                 .catch(function (error) {
                     // handle error
@@ -399,7 +393,7 @@
                 var pagesArray = [];
                 while(from <= to){
                     pagesArray.push(from);
-                    from ++;
+                    from++;
                 }
                 return pagesArray;
             }
