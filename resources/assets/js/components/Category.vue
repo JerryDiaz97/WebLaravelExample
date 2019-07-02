@@ -156,19 +156,75 @@
                 titleModal : '',
                 typeAction : 0,
                 errorCategory : 0,
-                errorShowMsnCategory : []
+                errorShowMsnCategory : [],
+                pagination : {
+                    'total' : 0,
+                    'current_page' : 0,
+                    'per_page' : 0,
+                    'last_page' : 0,
+                    'from' : 0,
+                    'to' : 0,
+                },
+                offset : 3
             }
         },
+
+        computed : {
+            isActived: function(){
+                return this.pagination.current_page;
+            },
+            pagesNumber: function(){
+                if(!this.pagination.to) {
+                    return [];
+                }
+
+                var from = this.pagination.current_page - this.oofset;
+                if(from < 1) {
+                    from = 1;
+                }
+
+                var to = from + (this.offset * 2);
+                if(to >= this.pagination.last_page) {
+                    to = this.pagination.last_page;
+                }
+
+                var pagesArray = [];
+                while(from <= to){
+                    pagesArray.push(from);
+                    from ++;
+                }
+                return pagesArray;
+            }
+        },
+
         methods : {
-            listCategory (){
+            listCategory (page){
+
+                const axios = require('axios');
                 let me=this;
-                axios.get('/category').then(function (response) {
+                var url = '/category?page=' + page;
+
+                axios.get(url).then(function (response) {
                     me.arrayCategory = response.data;
                 })
                 .catch(function (error) {
+                    // handle error
                     console.log(error);
+                })
+                .finally(function () {
+                    // always executed
                 });
             },
+
+            changePage(page) {
+                let me  = this;
+                //Update to the current page
+                me.pagination.current_page = page;
+                //Send a petition to view the page data
+                me.listCategory(page);
+
+            },
+
             registerCategory(){
                 if (this.validateCategory()){
                     return;
