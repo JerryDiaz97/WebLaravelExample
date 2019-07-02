@@ -10,4 +10,9 @@ class Category extends Model
     //protected $primaryKey = 'id';
     //For the mass assignment
     protected $fillable = ['name', 'description', 'condition'];
+
+    public function products()
+    {
+        return $this->hasMany('App\Product');
+    }
 }
