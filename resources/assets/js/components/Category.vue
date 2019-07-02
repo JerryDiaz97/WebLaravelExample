@@ -168,44 +168,18 @@
                 offset : 3
             }
         },
-
-        computed : {
-            isActived: function(){
-                return this.pagination.current_page;
-            },
-            pagesNumber: function(){
-                if(!this.pagination.to) {
-                    return [];
-                }
-
-                var from = this.pagination.current_page - this.oofset;
-                if(from < 1) {
-                    from = 1;
-                }
-
-                var to = from + (this.offset * 2);
-                if(to >= this.pagination.last_page) {
-                    to = this.pagination.last_page;
-                }
-
-                var pagesArray = [];
-                while(from <= to){
-                    pagesArray.push(from);
-                    from ++;
-                }
-                return pagesArray;
-            }
+        mounted() {
+            this.listCategory();
         },
-
         methods : {
             listCategory (page){
-
                 const axios = require('axios');
                 let me=this;
                 var url = '/category?page=' + page;
 
                 axios.get(url).then(function (response) {
-                    me.arrayCategory = response.data;
+                    console.log(response.data)
+                    me.arrayCategory = response.data.categories.data;
                 })
                 .catch(function (error) {
                     // handle error
@@ -403,9 +377,33 @@
                 }
             }
         },
-        mounted() {
-            this.listCategory();
-        }
+        computed : {
+            isActived: function(){
+                return this.pagination.current_page;
+            },
+            pagesNumber: function(){
+                if(!this.pagination.to) {
+                    return [];
+                }
+
+                var from = this.pagination.current_page - this.oofset;
+                if(from < 1) {
+                    from = 1;
+                }
+
+                var to = from + (this.offset * 2);
+                if(to >= this.pagination.last_page) {
+                    to = this.pagination.last_page;
+                }
+
+                var pagesArray = [];
+                while(from <= to){
+                    pagesArray.push(from);
+                    from ++;
+                }
+                return pagesArray;
+            }
+        },
     }
 </script>
 <style>    

@@ -2007,36 +2007,8 @@ __webpack_require__.r(__webpack_exports__);
       offset: 3
     };
   },
-  computed: {
-    isActived: function isActived() {
-      return this.pagination.current_page;
-    },
-    pagesNumber: function pagesNumber() {
-      if (!this.pagination.to) {
-        return [];
-      }
-
-      var from = this.pagination.current_page - this.oofset;
-
-      if (from < 1) {
-        from = 1;
-      }
-
-      var to = from + this.offset * 2;
-
-      if (to >= this.pagination.last_page) {
-        to = this.pagination.last_page;
-      }
-
-      var pagesArray = [];
-
-      while (from <= to) {
-        pagesArray.push(from);
-        from++;
-      }
-
-      return pagesArray;
-    }
+  mounted: function mounted() {
+    this.listCategory();
   },
   methods: {
     listCategory: function listCategory(page) {
@@ -2045,7 +2017,8 @@ __webpack_require__.r(__webpack_exports__);
       var me = this;
       var url = '/category?page=' + page;
       axios.get(url).then(function (response) {
-        me.arrayCategory = response.data;
+        console.log(response.data);
+        me.arrayCategory = response.data.categories.data;
       })["catch"](function (error) {
         // handle error
         console.log(error);
@@ -2205,8 +2178,36 @@ __webpack_require__.r(__webpack_exports__);
       }
     }
   },
-  mounted: function mounted() {
-    this.listCategory();
+  computed: {
+    isActived: function isActived() {
+      return this.pagination.current_page;
+    },
+    pagesNumber: function pagesNumber() {
+      if (!this.pagination.to) {
+        return [];
+      }
+
+      var from = this.pagination.current_page - this.oofset;
+
+      if (from < 1) {
+        from = 1;
+      }
+
+      var to = from + this.offset * 2;
+
+      if (to >= this.pagination.last_page) {
+        to = this.pagination.last_page;
+      }
+
+      var pagesArray = [];
+
+      while (from <= to) {
+        pagesArray.push(from);
+        from++;
+      }
+
+      return pagesArray;
+    }
   }
 });
 
@@ -50782,7 +50783,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
 
-Vue.component('category-comp', _components_Category__WEBPACK_IMPORTED_MODULE_0__["default"]);
+Vue.component('category', _components_Category__WEBPACK_IMPORTED_MODULE_0__["default"]);
 var app = new Vue({
   el: '#app',
   data: {
