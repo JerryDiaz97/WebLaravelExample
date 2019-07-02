@@ -8,8 +8,8 @@
                 <!-- Example Listing table -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fa fa-align-justify"></i> Categorías
-                        <button type="button" @click="openModal('category','register')" class="btn btn-secondary">
+                        <i class="fa fa-align-justify"></i> Productos
+                        <button type="button" @click="openModal('product','register')" class="btn btn-secondary">
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
                     </div>
@@ -21,8 +21,8 @@
                                       <option value="name">Nombre</option>
                                       <option value="description">Descripción</option>
                                     </select>
-                                    <input type="text" v-model="find" @keyup.enter="listCategory(1,find,criterion)" class="form-control" placeholder="Texto a buscar">
-                                    <button type="submit" @click="listCategory(1,find,criterion)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                    <input type="text" v-model="find" @keyup.enter="listProduct(1,find,criterion)" class="form-control" placeholder="Texto a buscar">
+                                    <button type="submit" @click="listProduct(1,find,criterion)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                                 </div>
                             </div>
                         </div>
@@ -30,33 +30,41 @@
                             <thead>
                                 <tr>
                                     <th>Opciones</th>
+                                    <th>Código de barras</th>
                                     <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Precio de venta</th>
+                                    <th>Stock</th>
                                     <th>Descripción</th>
                                     <th>Estado</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="category in arrayCategory" :key="category.id">
+                                <tr v-for="product in arrayProduct" :key="product.id">
                                     <td>
-                                        <button type="button" @click="openModal('category','update',category)" class="btn btn-warning btn-sm">
+                                        <button type="button" @click="openModal('product','update',product)" class="btn btn-warning btn-sm">
                                           <i class="icon-pencil"></i>
                                         </button> &nbsp;
-                                        <template v-if="category.condition">
-                                            <button type="button" class="btn btn-danger btn-sm" @click="deactivateCategory(category.id)">
+                                        <template v-if="product.conditionProd">
+                                            <button type="button" class="btn btn-danger btn-sm" @click="deactivateProduct(product.id)">
                                                 <i class="icon-trash"></i>
                                             </button>
                                         </template>
                                         <template v-else>
-                                            <button type="button" class="btn btn-info btn-sm" @click="activateCategory(category.id)">
+                                            <button type="button" class="btn btn-info btn-sm" @click="activateProduct(product.id)">
                                                 <i class="icon-check"></i>
                                             </button>
                                         </template>
 
                                     </td>
-                                    <td v-text="category.name"></td>
-                                    <td v-text="category.description"></td>
+                                    <td v-text="product.code"></td>
+                                    <td v-text="product.nameProd"></td>
+                                    <td v-text="product.name"></td>
+                                    <td v-text="product.sale_price"></td>
+                                    <td v-text="product.stock"></td>
+                                    <td v-text="product.descriptionProd"></td>
                                     <td>
-                                        <div v-if="category.condition">
+                                        <div v-if="product.conditionProd">
                                             <span class="badge badge-success">Activo</span>
                                         </div>
                                         <div v-else>
@@ -137,15 +145,20 @@
     export default {
         data (){
             return {
-                category_id: 0,
-                name : '',
-                description : '',
-                arrayCategory : [],
+                product_id : 0,
+                idcategory : 0,
+                category_name : '',
+                code : '',
+                nameProd : '',
+                sale_price : 0,
+                stock : 0,
+                descriptionProd : '',
+                arrayProduct : [],
                 modal : 0,
                 titleModal : '',
                 typeAction : 0,
-                errorCategory : 0,
-                errorShowMsnCategory : [],
+                errorProduct : 0,
+                errorShowMsnProduct : [],
                 pagination : {
                     'total' : 0,
                     'current_page' : 0,
@@ -160,19 +173,19 @@
             }
         },
         mounted() {
-            this.listCategory(1,this.find,this.criterion);
+            this.listProduct(1,this.find,this.criterion);
         },
         methods : {
-            listCategory (page, find, criterion){
+            listProduct (page, find, criterion){
                 const axios = require('axios');
                 let me=this;
-                var url = '/category?page=' + page +'&find' + find + '&criterion' + criterion;
+                var url = '/product?page=' + page +'&find' + find + '&criterion' + criterion;
 
                 axios.get(url).then(function (response) {
                     var answer = response.data
                     console.log(response.data)
                     //me.arrayCategory = response.data.categories.data;
-                    me.arrayCategory = answer.categories.data;
+                    me.arrayProduct = answer.products.data;
                     me.pagination = answer.pagination;
                 })
                 .catch(function (error) {
@@ -189,38 +202,38 @@
                 //Update to the current page
                 me.pagination.current_page = page;
                 //Send a petition to view the page data
-                me.listCategory(page, find, criterion);
+                me.listProduct(page, find, criterion);
 
             },
 
-            registerCategory(){
-                if (this.validateCategory()){
+            registerProduct(){
+                if (this.validateProduct()){
                     return;
                 }
                 
                 let me = this;
 
-                axios.post('/category/register',{
-                    'name': this.name,
-                    'description': this.description
+                axios.post('/product/register',{
+                    'nameProd': this.nameProd,
+                    'descriptionProd': this.descriptionProd
                 }).then(function (response) {
                     me.closeModal();
-                    me.listCategory(1,'','name');
+                    me.listProduct(1,'','nameProd');
                 }).catch(function (error) {
                     console.log(error);
                 });
             },
 
-            updateCategory(){
-                if (this.validateCategory()){
+            updateProduct(){
+                if (this.validateProduct()){
                     return;
                 }
                 
                 let me = this;
 
-                axios.put('/category/update',{
-                    'name': this.name,
-                    'description': this.description,
+                axios.put('/product/update',{
+                    'nameProd': this.nameProd,
+                    'descriptionProd': this.descriptionProd,
                     'id': this.category_id
 
                 }).then(function (response) {
