@@ -19,11 +19,11 @@
                         <div class="form-group row">
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <select class="form-control col-md-3" id="opcion" name="opcion">
-                                      <option value="nombre">Nombre</option>
-                                      <option value="descripcion">Descripción</option>
+                                    <select class="form-control col-md-3" id="option" name="option">
+                                      <option value="name">Nombre</option>
+                                      <option value="description">Descripción</option>
                                     </select>
-                                    <input type="text" id="texto" name="texto" class="form-control" placeholder="Texto a buscar">
+                                    <input type="text" id="text" name="text" class="form-control" placeholder="Texto a buscar">
                                     <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                                 </div>
                             </div>
@@ -43,9 +43,17 @@
                                         <button type="button" @click="openModal('category','update',category)" class="btn btn-warning btn-sm">
                                           <i class="icon-pencil"></i>
                                         </button> &nbsp;
-                                        <button type="button" class="btn btn-danger btn-sm">
-                                          <i class="icon-trash"></i>
-                                        </button>
+                                        <template v-if="category.condition">
+                                            <button type="button" class="btn btn-danger btn-sm" @click="deactivateCategory(category.id)">
+                                                <i class="icon-trash"></i>
+                                            </button>
+                                        </template>
+                                        <template v-else>
+                                            <button type="button" class="btn btn-info btn-sm" @click="activateCategory(category.id)">
+                                                <i class="icon-check"></i>
+                                            </button>
+                                        </template>
+
                                     </td>
                                     <td v-text="category.name"></td>
                                     <td v-text="category.description"></td>
@@ -93,7 +101,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title" v-text="titleModal"></h4>
-                            <button type="button" class="close" @click="closeModal()" aria-label="Close">
+                            <button type="button" class="close" @click="closeModal()" aria-label="close">
                               <span aria-hidden="true">×</span>
                             </button>
                         </div>
@@ -109,7 +117,7 @@
                                 <div class="form-group row">
                                     <label class="col-md-3 form-control-label" for="email-input">Descripción</label>
                                     <div class="col-md-9">
-                                        <input type="email" v-model="descripcion" class="form-control" placeholder="Ingrese descripción">
+                                        <input type="email" v-model="description" class="form-control" placeholder="Ingrese descripción">
                                     </div>
                                 </div>
                                 <div v-show="errorCategory" class="form-group row div-error">
@@ -133,29 +141,6 @@
                 <!-- /.modal-dialog -->
             </div>
             <!--Modal end-->
-            <!-- Start of the modal Delete -->
-            <div class="modal fade" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none;" aria-hidden="true">
-                <div class="modal-dialog modal-danger" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Eliminar Categoría</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="close">
-                              <span aria-hidden="true">×</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Estas seguro de eliminar la categoría?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                            <button type="button" class="btn btn-danger">Eliminar</button>
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
-            </div>
-            <!-- End modal Delete -->
         </main>
 </template>
 
@@ -201,16 +186,6 @@
                     console.log(error);
                 });
             },
-            validateCategory(){
-                this.errorCategory=0;
-                this.errorShowMsnCategory =[];
-
-                if (!this.name) this.errorShowMsnCategory.push("El nombre de la categoría no puede estar vacío.");
-
-                if (this.errorShowMsnCategory.length) this.errorCategory = 1;
-
-                return this.errorCategory;
-            },
 
             updateCategory(){
                 if (this.validateCategory()){
@@ -230,6 +205,111 @@
                 }).catch(function (error) {
                     console.log(error);
                 });
+            },
+
+            deactivateCategory(id) {
+                const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false,
+                })
+
+                swalWithBootstrapButtons.fire({
+                title: 'Realmente quiere desactivar la categoría?',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+                }).then((result) => {
+                if (result.value) {
+                    let me = this;
+
+                    axios.put('/category/deactivate',{
+                        'id': id
+
+                    }).then(function (response) {
+                        me.listCategory();
+                        swalWithBootstrapButtons.fire(
+                        'Desactivado',
+                        'Se desactivo el registro',
+                        'success'
+                    )
+
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+
+                } else if (
+                    // Read more about handling dismissals
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+                    swalWithBootstrapButtons.fire(
+                    'Cancelado',
+                    'error'
+                    )
+                }
+                })
+            },
+
+            activateCategory(id) {
+                const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false,
+                })
+
+                swalWithBootstrapButtons.fire({
+                title: 'Realmente quiere desactivar la categoría?',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+                }).then((result) => {
+                if (result.value) {
+                    let me = this;
+
+                    axios.put('/category/activate',{
+                        'id': id
+
+                    }).then(function (response) {
+                        me.listCategory();
+                        swalWithBootstrapButtons.fire(
+                        'Activado',
+                        'Se activo el registro',
+                        'success'
+                    )
+
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+
+                } else if (
+                    // Read more about handling dismissals
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+                    swalWithBootstrapButtons.fire(
+                    'Cancelado',
+                    'error'
+                    )
+                }
+                })
+            },
+
+            validateCategory(){
+                this.errorCategory=0;
+                this.errorShowMsnCategory =[];
+
+                if (!this.name) this.errorShowMsnCategory.push("El nombre de la categoría no puede estar vacío.");
+
+                if (this.errorShowMsnCategory.length) this.errorCategory = 1;
+
+                return this.errorCategory;
             },
 
             closeModal(){
