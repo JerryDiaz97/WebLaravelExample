@@ -10,7 +10,7 @@
                 <!-- Example Listing table -->
                 <div class="card">
                     <div class="card-header">
-                         <i class="fa fa-align-justify"></i> Categorías
+                        <i class="fa fa-align-justify"></i> Categorías
                         <button type="button" @click="openModal('category','register')" class="btn btn-secondary">
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
@@ -19,12 +19,12 @@
                         <div class="form-group row">
                             <div class="col-md-6">
                                 <div class="input-group">
-                                    <select class="form-control col-md-3" id="option" name="option">
+                                    <select class="form-control col-md-3" v-model="criterion">
                                       <option value="name">Nombre</option>
                                       <option value="description">Descripción</option>
                                     </select>
-                                    <input type="text" id="text" name="text" class="form-control" placeholder="Texto a buscar">
-                                    <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                    <input type="text" v-model="find" @keyup.enter="listCategory(1,find,criterion)" class="form-control" placeholder="Texto a buscar">
+                                    <button type="submit" @click="listCategory(1,find,criterion)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                                 </div>
                             </div>
                         </div>
@@ -72,13 +72,13 @@
                         <nav>
                             <ul class="pagination">
                                 <li class="page-item" v-if="pagination.current_page > 1">
-                                    <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page - 1)">Ant</a>
+                                    <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page - 1,find,criterion)">Ant</a>
                                 </li>
                                 <li class="page-item" v-for="page in pagesNumber" :key="page" :class="[page == isActived ? 'active' : '']">
-                                    <a class="page-link" href="#" @click.prevent="changePage(page)" v-text="page"></a>
+                                    <a class="page-link" href="#" @click.prevent="changePage(page,find,criterion)" v-text="page"></a>
                                 </li> 
                                 <li class="page-item" v-if="pagination.current_page < pagination.last_page">
-                                    <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page + 1)">Sig</a>
+                                    <a class="page-link" href="#" @click.prevent="changePage(pagination.current_page + 1,find,criterion)">Sig</a>
                                 </li>
                             </ul>
                         </nav>
@@ -156,17 +156,19 @@
                     'from' : 0,
                     'to' : 0,
                 },
-                offset : 3
+                offset : 3,
+                criterion : 'name',
+                find : ''
             }
         },
         mounted() {
-            this.listCategory();
+            this.listCategory(1,this.find,this.criterion);
         },
         methods : {
-            listCategory (page){
+            listCategory (page, find, criterion){
                 const axios = require('axios');
                 let me=this;
-                var url = '/category?page=' + page;
+                var url = '/category?page=' + page +'&find' + find + '&criterion' + criterion;
 
                 axios.get(url).then(function (response) {
                     var answer = response.data
@@ -184,12 +186,12 @@
                 });
             },
 
-            changePage(page) {
+            changePage(page, find, criterion) {
                 let me  = this;
                 //Update to the current page
                 me.pagination.current_page = page;
                 //Send a petition to view the page data
-                me.listCategory(page);
+                me.listCategory(page, find, criterion);
 
             },
 
@@ -205,7 +207,7 @@
                     'description': this.description
                 }).then(function (response) {
                     me.closeModal();
-                    me.listCategory();
+                    me.listCategory(1,'','name');
                 }).catch(function (error) {
                     console.log(error);
                 });
@@ -225,7 +227,7 @@
 
                 }).then(function (response) {
                     me.closeModal();
-                    me.listCategory();
+                    me.listCategory(1,'','name');
                 }).catch(function (error) {
                     console.log(error);
                 });
@@ -255,7 +257,7 @@
                         'id': id
 
                     }).then(function (response) {
-                        me.listCategory();
+                        me.listCategory(1,'','name');
                         swalWithBootstrapButtons.fire(
                         'Desactivado',
                         'Se desactivo el registro',
@@ -302,7 +304,7 @@
                         'id': id
 
                     }).then(function (response) {
-                        me.listCategory();
+                        me.listCategory(1,'','name');
                         swalWithBootstrapButtons.fire(
                         'Activado',
                         'Se activo el registro',

@@ -1995,18 +1995,20 @@ __webpack_require__.r(__webpack_exports__);
         'from': 0,
         'to': 0
       },
-      offset: 3
+      offset: 3,
+      criterion: 'name',
+      find: ''
     };
   },
   mounted: function mounted() {
-    this.listCategory();
+    this.listCategory(1, this.find, this.criterion);
   },
   methods: {
-    listCategory: function listCategory(page) {
+    listCategory: function listCategory(page, find, criterion) {
       var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
 
       var me = this;
-      var url = '/category?page=' + page;
+      var url = '/category?page=' + page + '&find' + find + '&criterion' + criterion;
       axios.get(url).then(function (response) {
         var answer = response.data;
         console.log(response.data); //me.arrayCategory = response.data.categories.data;
@@ -2019,12 +2021,12 @@ __webpack_require__.r(__webpack_exports__);
       })["finally"](function () {// always executed
       });
     },
-    changePage: function changePage(page) {
+    changePage: function changePage(page, find, criterion) {
       var me = this; //Update to the current page
 
       me.pagination.current_page = page; //Send a petition to view the page data
 
-      me.listCategory(page);
+      me.listCategory(page, find, criterion);
     },
     registerCategory: function registerCategory() {
       if (this.validateCategory()) {
@@ -2037,7 +2039,7 @@ __webpack_require__.r(__webpack_exports__);
         'description': this.description
       }).then(function (response) {
         me.closeModal();
-        me.listCategory();
+        me.listCategory(1, '', 'name');
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2054,7 +2056,7 @@ __webpack_require__.r(__webpack_exports__);
         'id': this.category_id
       }).then(function (response) {
         me.closeModal();
-        me.listCategory();
+        me.listCategory(1, '', 'name');
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2082,7 +2084,7 @@ __webpack_require__.r(__webpack_exports__);
           axios.put('/category/deactivate', {
             'id': id
           }).then(function (response) {
-            me.listCategory();
+            me.listCategory(1, '', 'name');
             swalWithBootstrapButtons.fire('Desactivado', 'Se desactivo el registro', 'success');
           })["catch"](function (error) {
             console.log(error);
@@ -2116,7 +2118,7 @@ __webpack_require__.r(__webpack_exports__);
           axios.put('/category/activate', {
             'id': id
           }).then(function (response) {
-            me.listCategory();
+            me.listCategory(1, '', 'name');
             swalWithBootstrapButtons.fire('Activado', 'Se activo el registro', 'success');
           })["catch"](function (error) {
             console.log(error);
@@ -38168,13 +38170,101 @@ var render = function() {
         ]),
         _vm._v(" "),
         _c("div", { staticClass: "card-body" }, [
-          _vm._m(1),
+          _c("div", { staticClass: "form-group row" }, [
+            _c("div", { staticClass: "col-md-6" }, [
+              _c("div", { staticClass: "input-group" }, [
+                _c(
+                  "select",
+                  {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.criterion,
+                        expression: "criterion"
+                      }
+                    ],
+                    staticClass: "form-control col-md-3",
+                    on: {
+                      change: function($event) {
+                        var $$selectedVal = Array.prototype.filter
+                          .call($event.target.options, function(o) {
+                            return o.selected
+                          })
+                          .map(function(o) {
+                            var val = "_value" in o ? o._value : o.value
+                            return val
+                          })
+                        _vm.criterion = $event.target.multiple
+                          ? $$selectedVal
+                          : $$selectedVal[0]
+                      }
+                    }
+                  },
+                  [
+                    _c("option", { attrs: { value: "name" } }, [
+                      _vm._v("Nombre")
+                    ]),
+                    _vm._v(" "),
+                    _c("option", { attrs: { value: "description" } }, [
+                      _vm._v("Descripción")
+                    ])
+                  ]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.find,
+                      expression: "find"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: { type: "text", placeholder: "Texto a buscar" },
+                  domProps: { value: _vm.find },
+                  on: {
+                    keyup: function($event) {
+                      if (
+                        !$event.type.indexOf("key") &&
+                        _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                      ) {
+                        return null
+                      }
+                      return _vm.listCategory(1, _vm.find, _vm.criterion)
+                    },
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.find = $event.target.value
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: { type: "submit" },
+                    on: {
+                      click: function($event) {
+                        return _vm.listCategory(1, _vm.find, _vm.criterion)
+                      }
+                    }
+                  },
+                  [_c("i", { staticClass: "fa fa-search" }), _vm._v(" Buscar")]
+                )
+              ])
+            ])
+          ]),
           _vm._v(" "),
           _c(
             "table",
             { staticClass: "table table-bordered table-striped table-sm" },
             [
-              _vm._m(2),
+              _vm._m(1),
               _vm._v(" "),
               _c(
                 "tbody",
@@ -38280,7 +38370,9 @@ var render = function() {
                             click: function($event) {
                               $event.preventDefault()
                               return _vm.changePage(
-                                _vm.pagination.current_page - 1
+                                _vm.pagination.current_page - 1,
+                                _vm.find,
+                                _vm.criterion
                               )
                             }
                           }
@@ -38306,7 +38398,7 @@ var render = function() {
                         on: {
                           click: function($event) {
                             $event.preventDefault()
-                            return _vm.changePage(page)
+                            return _vm.changePage(page, _vm.find, _vm.criterion)
                           }
                         }
                       })
@@ -38325,7 +38417,9 @@ var render = function() {
                             click: function($event) {
                               $event.preventDefault()
                               return _vm.changePage(
-                                _vm.pagination.current_page + 1
+                                _vm.pagination.current_page + 1,
+                                _vm.find,
+                                _vm.criterion
                               )
                             }
                           }
@@ -38575,47 +38669,6 @@ var staticRenderFns = [
       ]),
       _vm._v(" "),
       _c("li", { staticClass: "breadcrumb-item active" }, [_vm._v("Tablero")])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group row" }, [
-      _c("div", { staticClass: "col-md-6" }, [
-        _c("div", { staticClass: "input-group" }, [
-          _c(
-            "select",
-            {
-              staticClass: "form-control col-md-3",
-              attrs: { id: "option", name: "option" }
-            },
-            [
-              _c("option", { attrs: { value: "name" } }, [_vm._v("Nombre")]),
-              _vm._v(" "),
-              _c("option", { attrs: { value: "description" } }, [
-                _vm._v("Descripción")
-              ])
-            ]
-          ),
-          _vm._v(" "),
-          _c("input", {
-            staticClass: "form-control",
-            attrs: {
-              type: "text",
-              id: "text",
-              name: "text",
-              placeholder: "Texto a buscar"
-            }
-          }),
-          _vm._v(" "),
-          _c(
-            "button",
-            { staticClass: "btn btn-primary", attrs: { type: "submit" } },
-            [_c("i", { staticClass: "fa fa-search" }), _vm._v(" Buscar")]
-          )
-        ])
-      ])
     ])
   },
   function() {
