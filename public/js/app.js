@@ -2015,7 +2015,7 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     listCategory: function listCategory() {
       var me = this;
-      axios.get('/category').then(function (response) {
+      axios.get('/category-component').then(function (response) {
         me.arrayCategory = response.data;
       })["catch"](function (error) {
         console.log(error);
@@ -6538,7 +6538,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "\n.modal-content{\n    width: 100% !important;\n    position: absolute !important;\n}\n.mostrar{\n    display: list-item !important;\n    opacity: 1 !important;\n    position: absolute !important;\n    background-color: #3c29297a !important;\n}\n.div-error{\n    display: flex;\n    justify-content: center;\n}\n.text-error{\n    color: red !important;\n    font-weight: bold;\n}\n", ""]);
+exports.push([module.i, "\n.modal-content{\n    width: 100% !important;\n    position: absolute !important;\n}\n.show{\n    display: list-item !important;\n    opacity: 1 !important;\n    position: absolute !important;\n    background-color: #3c29297a !important;\n}\n.div-error{\n    display: flex;\n    justify-content: center;\n}\n.text-error{\n    color: red !important;\n    font-weight: bold;\n}\n", ""]);
 
 // exports
 
@@ -38490,7 +38490,7 @@ var staticRenderFns = [
                     attrs: {
                       type: "button",
                       "data-dismiss": "modal",
-                      "aria-label": "Close"
+                      "aria-label": "close"
                     }
                   },
                   [
@@ -50695,7 +50695,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
-Vue.component('category', __webpack_require__(/*! ./components/Category.vue */ "./resources/assets/js/components/Category.vue"));
+Vue.component('category-component', __webpack_require__(/*! ./components/Category.vue */ "./resources/assets/js/components/Category.vue"));
 var app = new Vue({
   el: '#app',
   data: {

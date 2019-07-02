@@ -125,7 +125,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="closeModal()">Cerrar</button>
                             <button type="button" v-if="typeAction==1" class="btn btn-primary" @click="registerCategory()">Guardar</button>
-                            <button type="button" v-if="typeAction==2" class="btn btn-primary">Actualizar</button>
+                            <button type="button" v-if="typeAction==2" class="btn btn-primary" @click="updateCategory()">Actualizar</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -139,7 +139,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title">Eliminar Categoría</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="close">
                               <span aria-hidden="true">×</span>
                             </button>
                         </div>
@@ -163,6 +163,7 @@
     export default {
         data (){
             return {
+                category_id: 0,
                 name : '',
                 description : '',
                 arrayCategory : [],
@@ -210,6 +211,27 @@
 
                 return this.errorCategory;
             },
+
+            updateCategory(){
+                if (this.validateCategory()){
+                    return;
+                }
+                
+                let me = this;
+
+                axios.put('/category/update',{
+                    'name': this.name,
+                    'description': this.description,
+                    'id': this.category_id
+
+                }).then(function (response) {
+                    me.closeModal();
+                    me.listCategory();
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+
             closeModal(){
                 this.modal=0;
                 this.titleModal='';
@@ -232,7 +254,13 @@
                             }
                             case 'update':
                             {
-                                
+                                console.log(data);
+                                this.titleModal = 'Actualizar Categoría';
+                                this.typeAction = 2;
+                                this.category_id = data['id'];
+                                this.name = data['name'];
+                                this.description = data['description'];
+                                break;  
                             }
                         }
                     }
@@ -249,7 +277,7 @@
         width: 100% !important;
         position: absolute !important;
     }
-    .mostrar{
+    .show{
         display: list-item !important;
         opacity: 1 !important;
         position: absolute !important;
