@@ -358,7 +358,9 @@
                             }
                             case 'update':
                             {
-                                console.log(data);
+                                //console.log(data);
+                                //Now can update
+                                this.modal = 1;
                                 this.titleModal = 'Actualizar Categoría';
                                 this.typeAction = 2;
                                 this.category_id = data['id'];
