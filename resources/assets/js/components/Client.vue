@@ -223,7 +223,7 @@
                 let me = this;
 
                 axios.post('/client/register',{
-                    'namec': this.name,
+                    'namec': this.namec,
                     'type_doc': this.type_doc,
                     'doc_num': this.doc_num,
                     'address': this.address,
@@ -245,7 +245,7 @@
                 let me = this;
 
                 axios.put('/client/update',{
-                    'namec': this.name,
+                    'namec': this.namec,
                     'type_doc': this.type_doc,
                     'doc_num': this.doc_num,
                     'address': this.address,
