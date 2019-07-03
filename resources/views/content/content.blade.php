@@ -4,15 +4,15 @@
 
     <template v-if = "menu == 0">   
     <!--Reference to the vue component-->
-        <example-component></example-component>
+        <h1>Contenido del Menú 0</h1>
     </template>
 
     <template v-if = "menu == 1">   
-        <h1>Contenido del Menú 1</h1>
+        <category></category>
     </template>
 
     <template v-if = "menu == 2">   
-        <h1>Contenido del Menú 2</h1>
+        <product></product>
     </template>
 
     <template v-if = "menu == 3">   
