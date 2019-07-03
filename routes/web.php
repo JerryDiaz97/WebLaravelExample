@@ -27,3 +27,7 @@ Route::post('/product/register', 'ProductController@store');
 Route::put('/product/update', 'ProductController@update');
 Route::put('/product/activate', 'ProductController@activate');
 Route::put('/product/deactivate', 'ProductController@deactivate');
+
+Route::get('/client', 'ClientController@index');
+Route::post('/client/register', 'ClientController@store');
+Route::put('/client/update', 'ClientController@update');
