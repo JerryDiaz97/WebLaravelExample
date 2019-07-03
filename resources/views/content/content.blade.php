@@ -28,7 +28,7 @@
     </template>
 
     <template v-if = "menu == 6">   
-        <h1>Contenido del Menú 6</h1>
+        <client></client>
     </template>
 
     <template v-if = "menu == 7">   

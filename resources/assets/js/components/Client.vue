@@ -8,8 +8,8 @@
                 <!-- Example Listing table -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fa fa-align-justify"></i> Categorías
-                        <button type="button" @click="openModal('category','register')" class="btn btn-secondary">
+                        <i class="fa fa-align-justify"></i> Clientes
+                        <button type="button" @click="openModal('client','register')" class="btn btn-secondary">
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
                     </div>
@@ -18,11 +18,13 @@
                             <div class="col-md-6">
                                 <div class="input-group">
                                     <select class="form-control col-md-3" v-model="criterion">
-                                      <option value="name">Nombre</option>
-                                      <option value="description">Descripción</option>
+                                      <option value="namec">Nombre</option>
+                                      <option value="doc_num">Documento</option>
+                                      <option value="email">Email</option>
+                                      <option value="phone_num">Teléfono</option>
                                     </select>
-                                    <input type="text" v-model="find" @keyup.enter="listCategory(1,find,criterion)" class="form-control" placeholder="Texto a buscar">
-                                    <button type="submit" @click="listCategory(1,find,criterion)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                    <input type="text" v-model="find" @keyup.enter="listClient(1,find,criterion)" class="form-control" placeholder="Texto a buscar">
+                                    <button type="submit" @click="listClient(1,find,criterion)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                                 </div>
                             </div>
                         </div>
@@ -31,39 +33,26 @@
                                 <tr>
                                     <th>Opciones</th>
                                     <th>Nombre</th>
-                                    <th>Descripción</th>
-                                    <th>Estado</th>
+                                    <th>Tipo de documento</th>
+                                    <th>Número</th>
+                                    <th>Dirección</th>
+                                    <th>Teléfono</th>
+                                    <th>Email</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="category in arrayCategory" :key="category.id">
+                                <tr v-for="client in arrayClient" :key="client.id">
                                     <td>
-                                        <button type="button" @click="openModal('category','update',category)" class="btn btn-warning btn-sm">
+                                        <button type="button" @click="openModal('client','update',client)" class="btn btn-warning btn-sm">
                                           <i class="icon-pencil"></i>
-                                        </button> &nbsp;
-                                        <template v-if="category.condition">
-                                            <button type="button" class="btn btn-danger btn-sm" @click="deactivateCategory(category.id)">
-                                                <i class="icon-trash"></i>
-                                            </button>
-                                        </template>
-                                        <template v-else>
-                                            <button type="button" class="btn btn-info btn-sm" @click="activateCategory(category.id)">
-                                                <i class="icon-check"></i>
-                                            </button>
-                                        </template>
-
+                                        </button> 
                                     </td>
-                                    <td v-text="category.name"></td>
-                                    <td v-text="category.description"></td>
-                                    <td>
-                                        <div v-if="category.condition">
-                                            <span class="badge badge-success">Activo</span>
-                                        </div>
-                                        <div v-else>
-                                            <span class="badge badge-danger">Desactivado</span>
-                                        </div>
-                                        
-                                    </td>
+                                    <td v-text="client.namec"></td>
+                                    <td v-text="client.type_doc"></td>
+                                    <td v-text="client.doc_num"></td>
+                                    <td v-text="client.address"></td>
+                                    <td v-text="client.phone_num"></td>
+                                    <td v-text="client.email"></td>                                        
                                 </tr>                                
                             </tbody>
                         </table>
@@ -99,19 +88,48 @@
                                 <div class="form-group row">
                                     <label class="col-md-3 form-control-label" for="text-input">Nombre</label>
                                     <div class="col-md-9">
-                                        <input type="text" v-model="name" class="form-control" placeholder="Nombre de categoría">
+                                        <input type="text" v-model="namec" class="form-control" placeholder="Nombre del cliente">                                       
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="text-input">Tipo de documento</label>
+                                    <div class="col-md-9">
+                                        <select v-model="type_doc" class="form-control">
+                                            <option value="DNI">Identificación</option>
+                                            <option value="LIC">Licencia de conducir</option>
+                                            <option value="PASS">Pasaporte</option>
+                                        </select> 
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="text-input">Número de documento</label>
+                                    <div class="col-md-9">
+                                        <input type="text" v-model="doc_num" class="form-control" placeholder="Número de documento">                                       
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="text-input">Dirección</label>
+                                    <div class="col-md-9">
+                                        <input type="text" v-model="address" class="form-control" placeholder="Dirección">
                                         
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-md-3 form-control-label" for="email-input">Descripción</label>
+                                    <label class="col-md-3 form-control-label" for="email-input">Teléfono</label>
                                     <div class="col-md-9">
-                                        <input type="email" v-model="description" class="form-control" placeholder="Ingrese descripción">
+                                        <input type="text" v-model="phone_num" class="form-control" placeholder="Teléfono">
                                     </div>
                                 </div>
-                                <div v-show="errorCategory" class="form-group row div-error">
+                                <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="email-input">Email</label>
+                                    <div class="col-md-9">
+                                        <input type="email" v-model="email" class="form-control" placeholder="Email">
+                                    </div>
+                                </div>
+                                <div v-show="errorClient" class="form-group row div-error">
                                     <div class="text-center text-error">
-                                        <div v-for="error in errorShowMsnCategory" :key="error" v-text="error">
+                                        <div v-for="error in errorShowMsnClient" :key="error" v-text="error">
 
                                         </div>
                                     </div>
@@ -121,8 +139,8 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="closeModal()">Cerrar</button>
-                            <button type="button" v-if="typeAction==1" class="btn btn-primary" @click="registerCategory()">Guardar</button>
-                            <button type="button" v-if="typeAction==2" class="btn btn-primary" @click="updateCategory()">Actualizar</button>
+                            <button type="button" v-if="typeAction==1" class="btn btn-primary" @click="registerClient()">Guardar</button>
+                            <button type="button" v-if="typeAction==2" class="btn btn-primary" @click="updateClient()">Actualizar</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -137,15 +155,19 @@
     export default {
         data (){
             return {
-                category_id: 0,
-                name : '',
-                description : '',
-                arrayCategory : [],
+                client_id: 0,
+                namec : '',
+                type_doc : 'DNI',
+                doc_num : '',
+                address : '',
+                phone_num : '',
+                email : '',
+                arrayClient : [],
                 modal : 0,
                 titleModal : '',
                 typeAction : 0,
-                errorCategory : 0,
-                errorShowMsnCategory : [],
+                errorClient : 0,
+                errorShowMsnClient : [],
                 pagination : {
                     'total' : 0,
                     'current_page' : 0,
@@ -155,24 +177,24 @@
                     'to' : 0,
                 },
                 offset : 3,
-                criterion : 'name',
+                criterion : 'namec',
                 find : ''
             }
         },
         mounted() {
-            this.listCategory(1,this.find,this.criterion);
+            this.listClient(1,this.find,this.criterion);
         },
         methods : {
-            listCategory (page, find, criterion){
+            listClient (page, find, criterion){
                 const axios = require('axios');
                 let me=this;
-                var url = '/category?page=' + page +'&find' + find + '&criterion' + criterion;
+                var url = '/client?page=' + page +'&find' + find + '&criterion' + criterion;
 
                 axios.get(url).then(function (response) {
                     var answer = response.data
                     console.log(response.data)
                     //me.arrayCategory = response.data.categories.data;
-                    me.arrayCategory = answer.categories.data;
+                    me.arrayClient = answer.clients.data;
                     me.pagination = answer.pagination;
                 })
                 .catch(function (error) {
@@ -189,182 +211,109 @@
                 //Update to the current page
                 me.pagination.current_page = page;
                 //Send a petition to view the page data
-                me.listCategory(page, find, criterion);
+                me.listClient(page, find, criterion);
 
             },
 
-            registerCategory(){
-                if (this.validateCategory()){
+            registerClient(){
+                if (this.validateClient()){
                     return;
                 }
                 
                 let me = this;
 
-                axios.post('/category/register',{
-                    'name': this.name,
-                    'description': this.description
+                axios.post('/client/register',{
+                    'namec': this.name,
+                    'type_doc': this.type_doc,
+                    'doc_num': this.doc_num,
+                    'address': this.address,
+                    'phone_num': this.phone_num,
+                    'email': this.email
                 }).then(function (response) {
                     me.closeModal();
-                    me.listCategory(1,'','name');
+                    me.listClient(1,'','namec');
                 }).catch(function (error) {
                     console.log(error);
                 });
             },
 
-            updateCategory(){
-                if (this.validateCategory()){
+            updateClient(){
+                if (this.validateClient()){
                     return;
                 }
                 
                 let me = this;
 
-                axios.put('/category/update',{
-                    'name': this.name,
-                    'description': this.description,
-                    'id': this.category_id
+                axios.put('/client/update',{
+                    'namec': this.name,
+                    'type_doc': this.type_doc,
+                    'doc_num': this.doc_num,
+                    'address': this.address,
+                    'phone_num': this.phone_num,
+                    'email': this.email,
+                    'id': this.client_id
 
                 }).then(function (response) {
                     me.closeModal();
-                    me.listCategory(1,'','name');
+                    me.listClient(1,'','namec');
                 }).catch(function (error) {
                     console.log(error);
                 });
             },
 
-            deactivateCategory(id) {
-                const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-danger'
-                },
-                buttonsStyling: false,
-                })
+            validateClient(){
+                this.errorClient = 0;
+                this.errorShowMsnClient = [];
 
-                swalWithBootstrapButtons.fire({
-                title: 'Realmente quiere desactivar la categoría?',
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Confirmar',
-                cancelButtonText: 'Cancelar',
-                reverseButtons: true
-                }).then((result) => {
-                if (result.value) {
-                    let me = this;
+                if (!this.namec) this.errorShowMsnClient.push("El nombre del cliente no puede estar vacío.");
 
-                    axios.put('/category/deactivate',{
-                        'id': id
+                if (this.errorShowMsnClient.length) this.errorClient = 1;
 
-                    }).then(function (response) {
-                        me.listCategory(1,'','name');
-                        swalWithBootstrapButtons.fire(
-                        'Desactivado',
-                        'Se desactivo el registro',
-                        'success'
-                    )
-
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
-
-                } else if (
-                    // Read more about handling dismissals
-                    result.dismiss === Swal.DismissReason.cancel
-                ) {
-                    swalWithBootstrapButtons.fire(
-                    'Cancelado',
-                    'error'
-                    )
-                }
-                })
-            },
-
-            activateCategory(id) {
-                const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-danger'
-                },
-                buttonsStyling: false,
-                })
-
-                swalWithBootstrapButtons.fire({
-                title: 'Realmente quiere activar la categoría?',
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Confirmar',
-                cancelButtonText: 'Cancelar',
-                reverseButtons: true
-                }).then((result) => {
-                if (result.value) {
-                    let me = this;
-
-                    axios.put('/category/activate',{
-                        'id': id
-
-                    }).then(function (response) {
-                        me.listCategory(1,'','name');
-                        swalWithBootstrapButtons.fire(
-                        'Activado',
-                        'Se activo el registro',
-                        'success'
-                    )
-
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
-
-                } else if (
-                    // Read more about handling dismissals
-                    result.dismiss === Swal.DismissReason.cancel
-                ) {
-                    swalWithBootstrapButtons.fire(
-                    'Cancelado',
-                    'error'
-                    )
-                }
-                })
-            },
-
-            validateCategory(){
-                this.errorCategory=0;
-                this.errorShowMsnCategory =[];
-
-                if (!this.name) this.errorShowMsnCategory.push("El nombre de la categoría no puede estar vacío.");
-
-                if (this.errorShowMsnCategory.length) this.errorCategory = 1;
-
-                return this.errorCategory;
+                return this.errorClient;
             },
 
             closeModal(){
                 this.modal=0;
                 this.titleModal='';
-                this.name='';
-                this.description='';
+                this.namec='';
+                this.type_doc='DNI';
+                this.doc_num='';
+                this.address='';
+                this.phone_num='';
+                this.email='';
+                this.errorClient=0;
             },
             openModal(model, action, data = []){
                 switch(model){
-                    case "category":
+                    case "client":
                     {
                         switch(action){
                             case 'register':
                             {
                                 this.modal = 1;
-                                this.titleModal = 'Registrar Categoría';
-                                this.name= '';
-                                this.description = '';
+                                this.titleModal = 'Registrar Cliente';
+                                this.namec='';
+                                this.type_doc='DNI';
+                                this.doc_num='';
+                                this.address='';
+                                this.phone_num='';
+                                this.email='';
                                 this.typeAction = 1;
                                 break;
                             }
                             case 'update':
                             {
                                 //console.log(data);
-                                this.modal = 1;
-                                this.titleModal = 'Actualizar Categoría';
+                                this.modal=1;
+                                this.titleModal = 'Actualizar Cliente';
                                 this.typeAction = 2;
-                                this.category_id = data['id'];
-                                this.name = data['name'];
-                                this.description = data['description'];
+                                this.client_id = data['id'];
+                                this.namec=data['namec'];
+                                this.type_doc=data['type_doc'];
+                                this.doc_num=data['doc_num'];
+                                this.address=data['address'];
+                                this.phone_num=data['phone_num'];
+                                this.email=data['email'];
                                 break;  
                             }
                         }

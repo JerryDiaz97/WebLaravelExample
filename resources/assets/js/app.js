@@ -20,9 +20,11 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
 import Category from './components/Category'
+import Client from './components/Client'
 import Product from './components/Product'
 
 Vue.component('category', Category);
+Vue.component('client', Client);
 Vue.component('product', Product);
 
 const app = new Vue({

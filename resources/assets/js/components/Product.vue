@@ -445,7 +445,8 @@ import VueBarcode from 'vue-barcode';
                             }
                             case 'update':
                             {
-                                console.log(data);
+                                //console.log(data);
+                                this.modal = 1;
                                 this.titleModal = 'Actualizar Producto';
                                 this.typeAction = 2;
                                 this.product_id = data['id'];
