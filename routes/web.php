@@ -31,3 +31,7 @@ Route::put('/product/deactivate', 'ProductController@deactivate');
 Route::get('/client', 'ClientController@index');
 Route::post('/client/register', 'ClientController@store');
 Route::put('/client/update', 'ClientController@update');
+
+Route::get('/provider', 'ProviderController@index');
+Route::post('/provider/register', 'ClientController@store');
+Route::put('/provider/update', 'ClientController@update');
