@@ -288,7 +288,7 @@
                 })
 
                 swalWithBootstrapButtons.fire({
-                title: 'Realmente quiere desactivar la categoría?',
+                title: 'Realmente quiere activar la categoría?',
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Confirmar',

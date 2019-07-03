@@ -55,7 +55,6 @@
                                                 <i class="icon-check"></i>
                                             </button>
                                         </template>
-
                                     </td>
                                     <td v-text="product.code"></td>
                                     <td v-text="product.nameProd"></td>
@@ -105,22 +104,50 @@
                         <div class="modal-body">
                             <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
                                 <div class="form-group row">
-                                    <label class="col-md-3 form-control-label" for="text-input">Nombre</label>
+                                    <label class="col-md-3 form-control-label" for="text-input">Categoría</label>
                                     <div class="col-md-9">
-                                        <input type="text" v-model="name" class="form-control" placeholder="Nombre de categoría">
-                                        
+                                        <select class="form-control" v-model="idcategory">
+                                            <option value="0" disabled>Seleccione</option>
+                                            <option v-for="category in arrayCategory" :key="category.id" :value="category.id" v-text="category.name"></option>
+                                        </select>                                        
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-md-3 form-control-label" for="email-input">Descripción</label>
-                                    <div class="col-md-9">
-                                        <input type="email" v-model="description" class="form-control" placeholder="Ingrese descripción">
-                                    </div>
+                                        <label class="col-md-3 form-control-label" for="text-input">Código</label>
+                                        <div class="col-md-9">
+                                            <input type="text" v-model="code" class="form-control" placeholder="Código de barras">
+                                            <barcode :value="code" :options="{format: 'EAN-13'}">
+                                                Generando Código de Barras
+                                            </barcode>
+                                        </div>
                                 </div>
-                                <div v-show="errorCategory" class="form-group row div-error">
+                                <div class="form-group row">
+                                        <label class="col-md-3 form-control-label" for="text-input">Nombre</label>
+                                        <div class="col-md-9">
+                                            <input type="text" v-model="nameProd" class="form-control" placeholder="Nombre del producto">
+                                        </div>
+                                </div>
+                                <div class="form-group row">
+                                        <label class="col-md-3 form-control-label" for="text-input">Precio de Venta</label>
+                                        <div class="col-md-9">
+                                        <input type="number" v-model="sale_price" class="form-control" placeholder="">
+                                        </div>
+                                </div>
+                                <div class="form-group row">
+                                        <label class="col-md-3 form-control-label" for="text-input">Stock</label>
+                                        <div class="col-md-9">
+                                        <input type="number" v-model="stock" class="form-control" placeholder="">
+                                        </div>
+                                </div>
+                                <div class="form-group row">
+                                            <label class="col-md-3 form-control-label" for="email-input">Descripción</label>
+                                            <div class="col-md-9">
+                                                <input type="email" v-model="descriptionProd" class="form-control" placeholder="Ingrese descripción">
+                                            </div>
+                                </div>
+                                <div v-show="errorProduct" class="form-group row div-error">
                                     <div class="text-center text-error">
-                                        <div v-for="error in errorShowMsnCategory" :key="error" v-text="error">
-
+                                        <div v-for="error in errorShowMsnProduct" :key="error" v-text="error">
                                         </div>
                                     </div>
                                 </div>
@@ -129,8 +156,8 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="closeModal()">Cerrar</button>
-                            <button type="button" v-if="typeAction==1" class="btn btn-primary" @click="registerCategory()">Guardar</button>
-                            <button type="button" v-if="typeAction==2" class="btn btn-primary" @click="updateCategory()">Actualizar</button>
+                            <button type="button" v-if="typeAction==1" class="btn btn-primary" @click="registerProduct()">Guardar</button>
+                            <button type="button" v-if="typeAction==2" class="btn btn-primary" @click="updateProduct()">Actualizar</button>
                         </div>
                     </div>
                     <!-- /.modal-content -->
@@ -142,6 +169,7 @@
 </template>
 
 <script>
+import VueBarcode from 'vue-barcode';
     export default {
         data (){
             return {
@@ -169,9 +197,12 @@
                 },
                 offset : 3,
                 criterion : 'name',
-                find : ''
+                find : '',
+                arrayCategory : []
             }
         },
+
+
         mounted() {
             this.listProduct(1,this.find,this.criterion);
         },
@@ -187,6 +218,26 @@
                     //me.arrayCategory = response.data.categories.data;
                     me.arrayProduct = answer.products.data;
                     me.pagination = answer.pagination;
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+                .finally(function () {
+                    // always executed
+                });
+            },
+            selectCategory() {
+                const axios = require('axios');
+                let me=this;
+                var url = '/category/selectCategory';
+
+                axios.get(url).then(function (response) {
+                    var answer = response.data
+                    console.log(response)
+                    //me.arrayProduct = response.data.products.data;
+                    me.arrayCategory = answer.categories;
+                    
                 })
                 .catch(function (error) {
                     // handle error
@@ -214,7 +265,11 @@
                 let me = this;
 
                 axios.post('/product/register',{
+                    'idcategory' :this.idcategory,
+                    'code' : this.code,
                     'nameProd': this.nameProd,
+                    'sale_price' : this.sale_price,
+                    'stock' : this.stock,
                     'descriptionProd': this.descriptionProd
                 }).then(function (response) {
                     me.closeModal();
@@ -232,19 +287,23 @@
                 let me = this;
 
                 axios.put('/product/update',{
+                    'idcategory' :this.idcategory,
+                    'code' : this.code,
                     'nameProd': this.nameProd,
+                    'sale_price' : this.sale_price,
+                    'stock' : this.stock,
                     'descriptionProd': this.descriptionProd,
-                    'id': this.category_id
+                    'id': this.product_id
 
                 }).then(function (response) {
                     me.closeModal();
-                    me.listCategory(1,'','name');
+                    me.listProduct(1,'','name');
                 }).catch(function (error) {
                     console.log(error);
                 });
             },
 
-            deactivateCategory(id) {
+            deactivateProduct(id) {
                 const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
                     confirmButton: 'btn btn-success',
@@ -264,11 +323,11 @@
                 if (result.value) {
                     let me = this;
 
-                    axios.put('/category/deactivate',{
+                    axios.put('/product/deactivate',{
                         'id': id
 
                     }).then(function (response) {
-                        me.listCategory(1,'','name');
+                        me.listProduct(1,'','nameProd');
                         swalWithBootstrapButtons.fire(
                         'Desactivado',
                         'Se desactivo el registro',
@@ -291,7 +350,7 @@
                 })
             },
 
-            activateCategory(id) {
+            activateProduct(id) {
                 const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
                     confirmButton: 'btn btn-success',
@@ -301,7 +360,7 @@
                 })
 
                 swalWithBootstrapButtons.fire({
-                title: 'Realmente quiere desactivar la categoría?',
+                title: 'Realmente quiere Activar la categoría?',
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Confirmar',
@@ -311,11 +370,11 @@
                 if (result.value) {
                     let me = this;
 
-                    axios.put('/category/activate',{
+                    axios.put('/product/activate',{
                         'id': id
 
                     }).then(function (response) {
-                        me.listCategory(1,'','name');
+                        me.listCategory(1,'','nameProd');
                         swalWithBootstrapButtons.fire(
                         'Activado',
                         'Se activo el registro',
@@ -338,50 +397,70 @@
                 })
             },
 
-            validateCategory(){
-                this.errorCategory=0;
-                this.errorShowMsnCategory =[];
+            validateProduct(){
+                this.errorProduct=0;
+                this.errorShowMsnProduct =[];
 
-                if (!this.name) this.errorShowMsnCategory.push("El nombre de la categoría no puede estar vacío.");
+                if(this.idcategory == 0) this.errorShowMsnProduct.push("Debe seleccionar una categoría");
+                if (!this.nameProd) this.errorShowMsnProduct.push("El nombre del producto no puede estar vacío");
+                if(!this.stock) this.errorShowMsnProduct.push("El stock del articulo debe ser un número y no puede estar vacío");
+                if(!this.sale_price) this.errorShowMsnProduct.push("El precio de venta del articulo debe ser un número y no puede estar vacío");
 
-                if (this.errorShowMsnCategory.length) this.errorCategory = 1;
 
-                return this.errorCategory;
+                if (this.errorShowMsnProduct.length) this.errorProduct = 1;
+
+                return this.errorProduct;
             },
 
             closeModal(){
-                this.modal=0;
-                this.titleModal='';
-                this.name='';
-                this.description='';
+                this.modal = 0;
+                this.titleModal = '';
+                this.idcategory = 0;
+                this.category_name = '';
+                this.code = '';
+                this.nameProd='';
+                this.sale_price = 0;
+                this.stock = 0;
+                this.descriptionProd = '';
+                this.errorProduct = 0;
             },
             openModal(model, action, data = []){
                 switch(model){
-                    case "category":
+                    case "product":
                     {
                         switch(action){
                             case 'register':
                             {
                                 this.modal = 1;
-                                this.titleModal = 'Registrar Categoría';
-                                this.name= '';
-                                this.description = '';
+                                this.titleModal = 'Registrar Producto';
+                                this.idcategory = 0;
+                                this.category_name = '';
+                                this.code = '';
+                                this.nameProd='';
+                                this.sale_price = 0;
+                                this.stock = 0;
+                                this.descriptionProd = '';
                                 this.typeAction = 1;
                                 break;
                             }
                             case 'update':
                             {
                                 console.log(data);
-                                this.titleModal = 'Actualizar Categoría';
+                                this.titleModal = 'Actualizar Producto';
                                 this.typeAction = 2;
-                                this.category_id = data['id'];
-                                this.name = data['name'];
-                                this.description = data['description'];
+                                this.product_id = data['id'];
+                                this.idcategory = data['idcategory'];
+                                this.code = data['code'];
+                                this.nameProd = data['nameProd'];
+                                this.sale_price = data['sale_price'];
+                                this.stock = data['stock'];
+                                this.descriptionProd = data['descriptionProd'];
                                 break;  
                             }
                         }
                     }
                 }
+                this.selectCategory();
             }
         },
         computed : {
@@ -411,6 +490,10 @@
                 return pagesArray;
             }
         },
+
+        components: {
+            'barcode': VueBarcode
+        }
     }
 </script>
 <style>    
