@@ -2182,7 +2182,7 @@ __webpack_require__.r(__webpack_exports__);
         return [];
       }
 
-      var from = this.pagination.current_page - this.oofset;
+      var from = this.pagination.current_page - this.offset;
 
       if (from < 1) {
         from = 1;
@@ -2537,7 +2537,7 @@ __webpack_require__.r(__webpack_exports__);
         return [];
       }
 
-      var from = this.pagination.current_page - this.oofset;
+      var from = this.pagination.current_page - this.offset;
 
       if (from < 1) {
         from = 1;
@@ -3004,7 +3004,7 @@ __webpack_require__.r(__webpack_exports__);
         return [];
       }
 
-      var from = this.pagination.current_page - this.oofset;
+      var from = this.pagination.current_page - this.offset;
 
       if (from < 1) {
         from = 1;
@@ -3371,7 +3371,7 @@ __webpack_require__.r(__webpack_exports__);
                   this.phone_num = data['phone_num'];
                   this.email = data['email'];
                   this.contact = data['contact'];
-                  this.contact_phone = ['contact_phone'];
+                  this.contact_phone = data['contact_phone'];
                   break;
                 }
             }
@@ -3388,7 +3388,7 @@ __webpack_require__.r(__webpack_exports__);
         return [];
       }
 
-      var from = this.pagination.current_page - this.oofset;
+      var from = this.pagination.current_page - this.offset;
 
       if (from < 1) {
         from = 1;
@@ -3542,37 +3542,37 @@ __webpack_require__.r(__webpack_exports__);
       me.pagination.current_page = page; //Send a petition to view the page data
 
       me.listRole(page, find, criterion);
+    }
+  },
+  computed: {
+    isActived: function isActived() {
+      return this.pagination.current_page;
     },
-    computed: {
-      isActived: function isActived() {
-        return this.pagination.current_page;
-      },
-      pagesNumber: function pagesNumber() {
-        if (!this.pagination.to) {
-          return [];
-        }
-
-        var from = this.pagination.current_page - this.oofset;
-
-        if (from < 1) {
-          from = 1;
-        }
-
-        var to = from + this.offset * 2;
-
-        if (to >= this.pagination.last_page) {
-          to = this.pagination.last_page;
-        }
-
-        var pagesArray = [];
-
-        while (from <= to) {
-          pagesArray.push(from);
-          from++;
-        }
-
-        return pagesArray;
+    pagesNumber: function pagesNumber() {
+      if (!this.pagination.to) {
+        return [];
       }
+
+      var from = this.pagination.current_page - this.offset;
+
+      if (from < 1) {
+        from = 1;
+      }
+
+      var to = from + this.offset * 2;
+
+      if (to >= this.pagination.last_page) {
+        to = this.pagination.last_page;
+      }
+
+      var pagesArray = [];
+
+      while (from <= to) {
+        pagesArray.push(from);
+        from++;
+      }
+
+      return pagesArray;
     }
   }
 });
@@ -3758,20 +3758,31 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       client_id: 0,
       namec: '',
-      type_doc: 'RUC',
+      type_doc: 'DNI',
       doc_num: '',
       address: '',
       phone_num: '',
       email: '',
-      name_user: '',
+      user_name: '',
       password: '',
       id_role: 0,
       arrayClient: [],
+      arrayRole: [],
       modal: 0,
       titleModal: '',
       typeAction: 0,
@@ -3811,6 +3822,22 @@ __webpack_require__.r(__webpack_exports__);
       })["finally"](function () {// always executed
       });
     },
+    selectRole: function selectRole() {
+      var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+
+      var me = this;
+      var url = '/role/selectRole';
+      axios.get(url).then(function (response) {
+        var answer = response.data;
+        console.log(response.data); //me.arrayCategory = response.data.categories.data;
+
+        me.arrayRole = answer.roles;
+      })["catch"](function (error) {
+        // handle error
+        console.log(error);
+      })["finally"](function () {// always executed
+      });
+    },
     changePage: function changePage(page, find, criterion) {
       var me = this; //Update to the current page
 
@@ -3824,15 +3851,16 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       var me = this;
-      axios.post('/provider/register', {
+      axios.post('/user/register', {
         'namec': this.namec,
         'type_doc': this.type_doc,
         'doc_num': this.doc_num,
         'address': this.address,
         'phone_num': this.phone_num,
         'email': this.email,
-        'contact': this.contact,
-        'contact_phone': this.contact_phone
+        'user_name': this.user_name,
+        'password': this.password,
+        'id_role': this.id_role
       }).then(function (response) {
         me.closeModal();
         me.listClient(1, '', 'namec');
@@ -3846,15 +3874,16 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       var me = this;
-      axios.put('/provider/update', {
+      axios.put('/user/update', {
         'namec': this.namec,
         'type_doc': this.type_doc,
         'doc_num': this.doc_num,
         'address': this.address,
         'phone_num': this.phone_num,
         'email': this.email,
-        'contact': this.contact,
-        'contact_phone': this.contact_phone,
+        'user_name': this.user_name,
+        'password': this.password,
+        'id_role': this.id_role,
         'id': this.client_id
       }).then(function (response) {
         me.closeModal();
@@ -3866,7 +3895,10 @@ __webpack_require__.r(__webpack_exports__);
     validateClient: function validateClient() {
       this.errorClient = 0;
       this.errorShowMsnClient = [];
-      if (!this.namec) this.errorShowMsnClient.push("El nombre del cliente no puede estar vacío.");
+      if (!this.namec) this.errorShowMsnClient.push("El nombre del cliente no puede estar vacío");
+      if (!this.user_name) this.errorShowMsnClient.push("El nombre de usuario no puede estar vacío");
+      if (!this.password) this.errorShowMsnClient.push("La contraseña no puede estar vacío");
+      if (this.id_role == 0) this.errorShowMsnClient.push("Debe asignar un rol al usuario");
       if (this.errorShowMsnClient.length) this.errorClient = 1;
       return this.errorClient;
     },
@@ -3879,12 +3911,14 @@ __webpack_require__.r(__webpack_exports__);
       this.address = '';
       this.phone_num = '';
       this.email = '';
-      this.contact = '';
-      this.contact_phone = '';
+      this.user_name = '';
+      this.password = '';
+      this.id_role = 0;
       this.errorClient = 0;
     },
     openModal: function openModal(model, action) {
       var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+      this.selectRole();
 
       switch (model) {
         case "client":
@@ -3893,15 +3927,16 @@ __webpack_require__.r(__webpack_exports__);
               case 'register':
                 {
                   this.modal = 1;
-                  this.titleModal = 'Registrar Proveedor';
+                  this.titleModal = 'Registrar Usuario';
                   this.namec = '';
                   this.type_doc = 'DNI';
                   this.doc_num = '';
                   this.address = '';
                   this.phone_num = '';
                   this.email = '';
-                  this.contact = '';
-                  this.contact_phone = '';
+                  this.user_name = '';
+                  this.password = '';
+                  this.id_role = 0;
                   this.typeAction = 1;
                   break;
                 }
@@ -3910,7 +3945,7 @@ __webpack_require__.r(__webpack_exports__);
                 {
                   //console.log(data);
                   this.modal = 1;
-                  this.titleModal = 'Actualizar Proveedor';
+                  this.titleModal = 'Actualizar Usuario';
                   this.typeAction = 2;
                   this.client_id = data['id'];
                   this.namec = data['namec'];
@@ -3919,8 +3954,9 @@ __webpack_require__.r(__webpack_exports__);
                   this.address = data['address'];
                   this.phone_num = data['phone_num'];
                   this.email = data['email'];
-                  this.contact = data['contact'];
-                  this.contact_phone = ['contact_phone'];
+                  this.user_name = data['user_name'];
+                  this.password = data['password'];
+                  this.id_role = data['id_role'];
                   break;
                 }
             }
@@ -3937,7 +3973,7 @@ __webpack_require__.r(__webpack_exports__);
         return [];
       }
 
-      var from = this.pagination.current_page - this.oofset;
+      var from = this.pagination.current_page - this.offset;
 
       if (from < 1) {
         from = 1;
@@ -46704,7 +46740,7 @@ var render = function() {
                           ],
                           staticClass: "form-control",
                           attrs: {
-                            type: "email",
+                            type: "text",
                             placeholder: "Nombre del Contacto"
                           },
                           domProps: { value: _vm.contact },
@@ -46742,7 +46778,7 @@ var render = function() {
                           ],
                           staticClass: "form-control",
                           attrs: {
-                            type: "email",
+                            type: "text",
                             placeholder: "Teléfono del Contacto"
                           },
                           domProps: { value: _vm.contact_phone },
@@ -47510,7 +47546,7 @@ var render = function() {
                           staticClass: "col-md-3 form-control-label",
                           attrs: { for: "text-input" }
                         },
-                        [_vm._v("Nombre")]
+                        [_vm._v("Nombre (*)")]
                       ),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-md-9" }, [
@@ -47751,7 +47787,66 @@ var render = function() {
                           staticClass: "col-md-3 form-control-label",
                           attrs: { for: "email-input" }
                         },
-                        [_vm._v("Contacto")]
+                        [_vm._v("Rol (*)")]
+                      ),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-md-9" }, [
+                        _c(
+                          "select",
+                          {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.id_role,
+                                expression: "id_role"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            on: {
+                              change: function($event) {
+                                var $$selectedVal = Array.prototype.filter
+                                  .call($event.target.options, function(o) {
+                                    return o.selected
+                                  })
+                                  .map(function(o) {
+                                    var val = "_value" in o ? o._value : o.value
+                                    return val
+                                  })
+                                _vm.id_role = $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              }
+                            }
+                          },
+                          [
+                            _c("option", { attrs: { value: "0" } }, [
+                              _vm._v("Seleccione un Rol")
+                            ]),
+                            _vm._v(" "),
+                            _vm._l(_vm.arrayRole, function(role) {
+                              return _c("option", {
+                                key: role.id,
+                                domProps: {
+                                  value: role.id,
+                                  textContent: _vm._s(role.namer)
+                                }
+                              })
+                            })
+                          ],
+                          2
+                        )
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group row" }, [
+                      _c(
+                        "label",
+                        {
+                          staticClass: "col-md-3 form-control-label",
+                          attrs: { for: "email-input" }
+                        },
+                        [_vm._v("Usuario (*)")]
                       ),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-md-9" }, [
@@ -47760,22 +47855,22 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.contact,
-                              expression: "contact"
+                              value: _vm.user_name,
+                              expression: "user_name"
                             }
                           ],
                           staticClass: "form-control",
                           attrs: {
-                            type: "email",
-                            placeholder: "Nombre del Contacto"
+                            type: "text",
+                            placeholder: "Nombre de Usuario"
                           },
-                          domProps: { value: _vm.contact },
+                          domProps: { value: _vm.user_name },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
                                 return
                               }
-                              _vm.contact = $event.target.value
+                              _vm.user_name = $event.target.value
                             }
                           }
                         })
@@ -47789,7 +47884,7 @@ var render = function() {
                           staticClass: "col-md-3 form-control-label",
                           attrs: { for: "email-input" }
                         },
-                        [_vm._v("Teléfono de Contacto")]
+                        [_vm._v("Password (*)")]
                       ),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-md-9" }, [
@@ -47798,22 +47893,22 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.contact_phone,
-                              expression: "contact_phone"
+                              value: _vm.password,
+                              expression: "password"
                             }
                           ],
                           staticClass: "form-control",
                           attrs: {
-                            type: "email",
-                            placeholder: "Teléfono del Contacto"
+                            type: "password",
+                            placeholder: "Contraseña de Acceso"
                           },
-                          domProps: { value: _vm.contact_phone },
+                          domProps: { value: _vm.password },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
                                 return
                               }
-                              _vm.contact_phone = $event.target.value
+                              _vm.password = $event.target.value
                             }
                           }
                         })

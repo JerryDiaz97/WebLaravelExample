@@ -473,7 +473,7 @@ import VueBarcode from 'vue-barcode';
                     return [];
                 }
 
-                var from = this.pagination.current_page - this.oofset;
+                var from = this.pagination.current_page - this.offset;
                 if(from < 1) {
                     from = 1;
                 }

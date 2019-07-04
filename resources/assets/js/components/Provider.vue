@@ -133,13 +133,13 @@
                                 <div class="form-group row">
                                     <label class="col-md-3 form-control-label" for="email-input">Contacto</label>
                                     <div class="col-md-9">
-                                        <input type="email" v-model="contact" class="form-control" placeholder="Nombre del Contacto">
+                                        <input type="text" v-model="contact" class="form-control" placeholder="Nombre del Contacto">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <label class="col-md-3 form-control-label" for="email-input">Teléfono de Contacto</label>
                                     <div class="col-md-9">
-                                        <input type="email" v-model="contact_phone" class="form-control" placeholder="Teléfono del Contacto">
+                                        <input type="text" v-model="contact_phone" class="form-control" placeholder="Teléfono del Contacto">
                                     </div>
                                 </div>
                                 <div v-show="errorClient" class="form-group row div-error">
@@ -341,7 +341,7 @@
                                 this.phone_num=data['phone_num'];
                                 this.email=data['email'];
                                 this.contact=data['contact'];
-                                this.contact_phone=['contact_phone'];
+                                this.contact_phone=data['contact_phone'];
                                 break;  
                             }
                         }
@@ -358,7 +358,7 @@
                     return [];
                 }
 
-                var from = this.pagination.current_page - this.oofset;
+                var from = this.pagination.current_page - this.offset;
                 if(from < 1) {
                     from = 1;
                 }

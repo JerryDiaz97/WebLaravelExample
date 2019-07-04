@@ -124,7 +124,7 @@
                 me.listRole(page, find, criterion);
 
             },
-
+        },
         computed : {
             isActived: function(){
                 return this.pagination.current_page;
@@ -134,7 +134,7 @@
                     return [];
                 }
 
-                var from = this.pagination.current_page - this.oofset;
+                var from = this.pagination.current_page - this.offset;
                 if(from < 1) {
                     from = 1;
                 }
@@ -153,7 +153,7 @@
             }
         }
     }
-}
+
 </script>
 <style>    
     .modal-content{

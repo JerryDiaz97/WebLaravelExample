@@ -90,7 +90,7 @@
                         <div class="modal-body">
                             <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
                                 <div class="form-group row">
-                                    <label class="col-md-3 form-control-label" for="text-input">Nombre</label>
+                                    <label class="col-md-3 form-control-label" for="text-input">Nombre (*)</label>
                                     <div class="col-md-9">
                                         <input type="text" v-model="namec" class="form-control" placeholder="Nombre del cliente">                                       
                                     </div>
@@ -133,15 +133,25 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-md-3 form-control-label" for="email-input">Contacto</label>
+                                    <label class="col-md-3 form-control-label" for="email-input">Rol (*)</label>
                                     <div class="col-md-9">
-                                        <input type="email" v-model="contact" class="form-control" placeholder="Nombre del Contacto">
+                                        <select class="form-control" v-model="id_role">
+                                            <option value="0">Seleccione un Rol</option>
+                                            <option v-for="role in arrayRole" :key="role.id" :value="role.id" v-text="role.namer"></option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="email-input">Usuario (*)</label>
+                                    <div class="col-md-9">
+                                        <input type="text" v-model="user_name" class="form-control" placeholder="Nombre de Usuario">
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-md-3 form-control-label" for="email-input">Teléfono de Contacto</label>
+                                    <label class="col-md-3 form-control-label" for="email-input">Password (*)</label>
                                     <div class="col-md-9">
-                                        <input type="email" v-model="contact_phone" class="form-control" placeholder="Teléfono del Contacto">
+                                        <input type="password" v-model="password" class="form-control" placeholder="Contraseña de Acceso">
                                     </div>
                                 </div>
                                 <div v-show="errorClient" class="form-group row div-error">
@@ -174,15 +184,16 @@
             return {
                 client_id: 0,
                 namec : '',
-                type_doc : 'RUC',
+                type_doc : 'DNI',
                 doc_num : '',
                 address : '',
                 phone_num : '',
                 email : '',
-                name_user : '',
+                user_name : '',
                 password : '',
                 id_role : 0,
                 arrayClient : [],
+                arrayRole : [],
                 modal : 0,
                 titleModal : '',
                 typeAction : 0,
@@ -226,6 +237,26 @@
                 });
             },
 
+            selectRole() {
+                 const axios = require('axios');
+                let me=this;
+                var url = '/role/selectRole';
+
+                axios.get(url).then(function (response) {
+                    var answer = response.data
+                    console.log(response.data)
+                    //me.arrayCategory = response.data.categories.data;
+                    me.arrayRole = answer.roles;
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+                .finally(function () {
+                    // always executed
+                });
+            },
+
             changePage(page, find, criterion) {
                 let me  = this;
                 //Update to the current page
@@ -242,15 +273,17 @@
                 
                 let me = this;
 
-                axios.post('/provider/register',{
+                axios.post('/user/register',{
                     'namec': this.namec,
                     'type_doc': this.type_doc,
                     'doc_num': this.doc_num,
                     'address': this.address,
                     'phone_num': this.phone_num,
                     'email': this.email,
-                    'contact': this.contact,
-                    'contact_phone': this.contact_phone
+                    'user_name': this.user_name,
+                    'password': this.password,
+                    'id_role': this.id_role
+
                 }).then(function (response) {
                     me.closeModal();
                     me.listClient(1,'','namec');
@@ -266,17 +299,17 @@
                 
                 let me = this;
 
-                axios.put('/provider/update',{
+                axios.put('/user/update',{
                     'namec': this.namec,
                     'type_doc': this.type_doc,
                     'doc_num': this.doc_num,
                     'address': this.address,
                     'phone_num': this.phone_num,
                     'email': this.email,
-                    'contact': this.contact,
-                    'contact_phone': this.contact_phone,
-                    'id': this.client_id
-                    
+                    'user_name': this.user_name,
+                    'password': this.password,
+                    'id_role': this.id_role,
+                    'id': this.client_id 
 
                 }).then(function (response) {
                     me.closeModal();
@@ -290,7 +323,10 @@
                 this.errorClient = 0;
                 this.errorShowMsnClient = [];
 
-                if (!this.namec) this.errorShowMsnClient.push("El nombre del cliente no puede estar vacío.");
+                if (!this.namec) this.errorShowMsnClient.push("El nombre del cliente no puede estar vacío");
+                if (!this.user_name) this.errorShowMsnClient.push("El nombre de usuario no puede estar vacío");
+                if (!this.password) this.errorShowMsnClient.push("La contraseña no puede estar vacío");
+                if (this.id_role==0) this.errorShowMsnClient.push("Debe asignar un rol al usuario");
 
                 if (this.errorShowMsnClient.length) this.errorClient = 1;
 
@@ -306,11 +342,13 @@
                 this.address='';
                 this.phone_num='';
                 this.email='';
-                this.contact='';
-                this.contact_phone='';
+                this.user_name='';
+                this.password='';
+                this.id_role=0;
                 this.errorClient=0;
             },
             openModal(model, action, data = []){
+                this.selectRole();
                 switch(model){
                     case "client":
                     {
@@ -318,15 +356,16 @@
                             case 'register':
                             {
                                 this.modal = 1;
-                                this.titleModal = 'Registrar Proveedor';
+                                this.titleModal = 'Registrar Usuario';
                                 this.namec='';
                                 this.type_doc='DNI';
                                 this.doc_num='';
                                 this.address='';
                                 this.phone_num='';
                                 this.email='';
-                                this.contact='';
-                                this.contact_phone='';
+                                this.user_name='';
+                                this.password='';
+                                this.id_role=0;
                                 this.typeAction = 1;
                                 break;
                             }
@@ -334,17 +373,18 @@
                             {
                                 //console.log(data);
                                 this.modal=1;
-                                this.titleModal = 'Actualizar Proveedor';
+                                this.titleModal = 'Actualizar Usuario';
                                 this.typeAction = 2;
                                 this.client_id = data['id'];
-                                this.namec=data['namec'];
-                                this.type_doc=data['type_doc'];
-                                this.doc_num=data['doc_num'];
-                                this.address=data['address'];
-                                this.phone_num=data['phone_num'];
-                                this.email=data['email'];
-                                this.contact=data['contact'];
-                                this.contact_phone=['contact_phone'];
+                                this.namec = data['namec'];
+                                this.type_doc = data['type_doc'];
+                                this.doc_num = data['doc_num'];
+                                this.address = data['address'];
+                                this.phone_num = data['phone_num'];
+                                this.email = data['email'];
+                                this.user_name = data['user_name'];
+                                this.password = data['password'];
+                                this.id_role = data['id_role'];
                                 break;  
                             }
                         }
@@ -361,7 +401,7 @@
                     return [];
                 }
 
-                var from = this.pagination.current_page - this.oofset;
+                var from = this.pagination.current_page - this.offset;
                 if(from < 1) {
                     from = 1;
                 }
