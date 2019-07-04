@@ -47,7 +47,17 @@
                                     <td>
                                         <button type="button" @click="openModal('client','update',client)" class="btn btn-warning btn-sm">
                                           <i class="icon-pencil"></i>
-                                        </button> 
+                                        </button>&nbsp;
+                                        <template v-if="client.condition">
+                                            <button type="button" class="btn btn-danger btn-sm" @click="deactivateUser(client.id)">
+                                                <i class="icon-trash"></i>
+                                            </button>
+                                        </template>
+                                        <template v-else>
+                                            <button type="button" class="btn btn-info btn-sm" @click="activateUser(client.id)">
+                                                <i class="icon-check"></i>
+                                            </button>
+                                        </template> 
                                     </td>
                                     <td v-text="client.namec"></td>
                                     <td v-text="client.type_doc"></td>
@@ -331,6 +341,100 @@
                 if (this.errorShowMsnClient.length) this.errorClient = 1;
 
                 return this.errorClient;
+            },
+
+            deactivateUser(id) {
+                const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false,
+                })
+
+                swalWithBootstrapButtons.fire({
+                title: 'Realmente quiere desactivar el Usuario?',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+                }).then((result) => {
+                if (result.value) {
+                    let me = this;
+
+                    axios.put('/user/deactivate',{
+                        'id': id
+
+                    }).then(function (response) {
+                        me.listClient(1,'','namec');
+                        swalWithBootstrapButtons.fire(
+                        'Desactivado',
+                        'Se desactivo el registro',
+                        'success'
+                    )
+
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+
+                } else if (
+                    // Read more about handling dismissals
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+                    swalWithBootstrapButtons.fire(
+                    'Cancelado',
+                    'error'
+                    )
+                }
+                })
+            },
+
+            activateUser(id) {
+                const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false,
+                })
+
+                swalWithBootstrapButtons.fire({
+                title: 'Realmente quiere activar este Usuario?',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+                }).then((result) => {
+                if (result.value) {
+                    let me = this;
+
+                    axios.put('/user/activate',{
+                        'id': id
+
+                    }).then(function (response) {
+                        me.listClient(1,'','namec');
+                        swalWithBootstrapButtons.fire(
+                        'Activado',
+                        'Se activo el registro',
+                        'success'
+                    )
+
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+
+                } else if (
+                    // Read more about handling dismissals
+                    result.dismiss === Swal.DismissReason.cancel
+                ) {
+                    swalWithBootstrapButtons.fire(
+                    'Cancelado',
+                    'error'
+                    )
+                }
+                })
             },
 
             closeModal(){
