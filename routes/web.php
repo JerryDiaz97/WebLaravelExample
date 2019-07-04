@@ -37,3 +37,9 @@ Route::post('/provider/register', 'ProviderController@store');
 Route::put('/provider/update', 'ProviderController@update');
 
 Route::get('/role', 'RoleController@index');
+
+Route::get('/user', 'UserController@index');
+Route::post('/user/register', 'UserController@store');
+Route::put('/user/update', 'UserController@update');
+Route::put('/user/activate', 'UserController@activate');
+Route::put('/user/deactivate', 'UserController@deactivate');

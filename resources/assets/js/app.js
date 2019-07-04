@@ -24,12 +24,14 @@ import Client from './components/Client'
 import Product from './components/Product'
 import Provider from './components/Provider'
 import Role from './components/Role'
+import User from './components/User'
 
 Vue.component('category', Category);
 Vue.component('client', Client);
 Vue.component('product', Product);
 Vue.component('provider', Provider);
 Vue.component('role', Role);
+Vue.component('user', User);
 
 const app = new Vue({
     el: '#app',

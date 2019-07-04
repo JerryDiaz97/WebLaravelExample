@@ -32,11 +32,11 @@
     </template>
 
     <template v-if = "menu == 7">   
-        <h1>Contenido del Menú 7</h1>
+        <user></user>
     </template>
 
     <template v-if = "menu == 8">   
-        <role></role>
+        <role></rol>
     </template>
 
     <template v-if = "menu == 9">   
