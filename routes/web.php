@@ -22,16 +22,18 @@ Route::put('/category/activate', 'CategoryController@activate');
 Route::put('/category/deactivate', 'CategoryController@deactivate');
 Route::get('/category/selectCategory', 'CategoryController@selectCategory');
 
+Route::get('/client', 'ClientController@index');
+Route::post('/client/register', 'ClientController@store');
+Route::put('/client/update', 'ClientController@update');
+
 Route::get('/product', 'ProductController@index');
 Route::post('/product/register', 'ProductController@store');
 Route::put('/product/update', 'ProductController@update');
 Route::put('/product/activate', 'ProductController@activate');
 Route::put('/product/deactivate', 'ProductController@deactivate');
 
-Route::get('/client', 'ClientController@index');
-Route::post('/client/register', 'ClientController@store');
-Route::put('/client/update', 'ClientController@update');
-
 Route::get('/provider', 'ProviderController@index');
 Route::post('/provider/register', 'ProviderController@store');
 Route::put('/provider/update', 'ProviderController@update');
+
+Route::get('/role', 'RoleController@index');

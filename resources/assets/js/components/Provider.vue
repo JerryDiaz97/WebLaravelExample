@@ -205,7 +205,7 @@
             listClient (page, find, criterion){
                 const axios = require('axios');
                 let me=this;
-                var url = '/provider?page=' + page +'&find' + find + '&criterion' + criterion;
+                var url = '/provider?page=' + page +'&find=' + find + '&criterion=' + criterion;
 
                 axios.get(url).then(function (response) {
                     var answer = response.data
