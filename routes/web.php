@@ -33,5 +33,5 @@ Route::post('/client/register', 'ClientController@store');
 Route::put('/client/update', 'ClientController@update');
 
 Route::get('/provider', 'ProviderController@index');
-Route::post('/provider/register', 'ClientController@store');
-Route::put('/provider/update', 'ClientController@update');
+Route::post('/provider/register', 'ProviderController@store');
+Route::put('/provider/update', 'ProviderController@update');

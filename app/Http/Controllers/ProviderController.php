@@ -17,13 +17,13 @@ class ProviderController extends Controller
         $criterion = $request->criterion;
 
         if($find == ''){
-            $providers = Provider::join('clients','providers.id','=','clients.id')
+            $clients = Provider::join('clients','providers.id','=','clients.id')
             ->select('clients.id','clients.namec','clients.type_doc','clients.doc_num',
             'clients.address','clients.phone_num','clients.email','providers.contact',
             'providers.contact_phone')->orderBy('clients.id','desc')->paginate(3);
         }
         else{
-            $providers = Provider::join('clients','providers.id','=','clients.id')
+            $clients = Provider::join('clients','providers.id','=','clients.id')
             ->select('clients.id','clients.namec','clients.type_doc','clients.doc_num',
             'clients.address','clients.phone_num','clients.email','providers.contact',
             'providers.contact_phone')->where('clients.'.$criterion, 'like', '%'. $find .'%')
@@ -32,14 +32,14 @@ class ProviderController extends Controller
         
         return [
             'pagination' => [
-                'total'         => $providers->total(), 
-                'current_page'  => $providers->currentPage(),
-                'per_page'      => $providers->perPage(),
-                'last_page'     => $providers->lastPage(),
-                'from'          => $providers->firstItem(),
-                'to'            => $providers->lastItem()
+                'total'         => $clients->total(), 
+                'current_page'  => $clients->currentPage(),
+                'per_page'      => $clients->perPage(),
+                'last_page'     => $clients->lastPage(),
+                'from'          => $clients->firstItem(),
+                'to'            => $clients->lastItem()
             ],
-            'providers' => $providers
+            'clients' => $clients
 
         ];
     }
