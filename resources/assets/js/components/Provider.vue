@@ -8,7 +8,7 @@
                 <!-- Example Listing table -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fa fa-align-justify"></i> Clientes
+                        <i class="fa fa-align-justify"></i> Proveedores
                         <button type="button" @click="openModal('client','register')" class="btn btn-secondary">
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
@@ -38,6 +38,7 @@
                                     <th>Dirección</th>
                                     <th>Teléfono</th>
                                     <th>Email</th>
+                                    <th>Contacto</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -52,7 +53,8 @@
                                     <td v-text="client.doc_num"></td>
                                     <td v-text="client.address"></td>
                                     <td v-text="client.phone_num"></td>
-                                    <td v-text="client.email"></td>                                        
+                                    <td v-text="client.email"></td> 
+                                    <td v-text="client.contact"></td>                                         
                                 </tr>                                
                             </tbody>
                         </table>
@@ -128,6 +130,18 @@
                                         <input type="email" v-model="email" class="form-control" placeholder="Email">
                                     </div>
                                 </div>
+                                <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="email-input">Contacto</label>
+                                    <div class="col-md-9">
+                                        <input type="email" v-model="contact" class="form-control" placeholder="Nombre del Contacto">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-md-3 form-control-label" for="email-input">Teléfono de Contacto</label>
+                                    <div class="col-md-9">
+                                        <input type="email" v-model="contact_phone" class="form-control" placeholder="Teléfono del Contacto">
+                                    </div>
+                                </div>
                                 <div v-show="errorClient" class="form-group row div-error">
                                     <div class="text-center text-error">
                                         <div v-for="error in errorShowMsnClient" :key="error" v-text="error">
@@ -158,11 +172,13 @@
             return {
                 client_id: 0,
                 namec : '',
-                type_doc : 'DNI',
+                type_doc : 'RUC',
                 doc_num : '',
                 address : '',
                 phone_num : '',
                 email : '',
+                contact : '',
+                contact_phone : '',
                 arrayClient : [],
                 modal : 0,
                 titleModal : '',
@@ -189,7 +205,7 @@
             listClient (page, find, criterion){
                 const axios = require('axios');
                 let me=this;
-                var url = '/client?page=' + page +'&find' + find + '&criterion' + criterion;
+                var url = '/provider?page=' + page +'&find' + find + '&criterion' + criterion;
 
                 axios.get(url).then(function (response) {
                     var answer = response.data
@@ -223,13 +239,15 @@
                 
                 let me = this;
 
-                axios.post('/client/register',{
+                axios.post('/provider/register',{
                     'namec': this.namec,
                     'type_doc': this.type_doc,
                     'doc_num': this.doc_num,
                     'address': this.address,
                     'phone_num': this.phone_num,
-                    'email': this.email
+                    'email': this.email,
+                    'contact': this.contact,
+                    'contact_phone': this.contact_phone
                 }).then(function (response) {
                     me.closeModal();
                     me.listClient(1,'','namec');
@@ -245,14 +263,17 @@
                 
                 let me = this;
 
-                axios.put('/client/update',{
+                axios.put('/provider/update',{
                     'namec': this.namec,
                     'type_doc': this.type_doc,
                     'doc_num': this.doc_num,
                     'address': this.address,
                     'phone_num': this.phone_num,
                     'email': this.email,
+                    'contact': this.contact,
+                    'contact_phone': this.contact_phone,
                     'id': this.client_id
+                    
 
                 }).then(function (response) {
                     me.closeModal();
@@ -282,6 +303,8 @@
                 this.address='';
                 this.phone_num='';
                 this.email='';
+                this.contact='';
+                this.contact_phone='';
                 this.errorClient=0;
             },
             openModal(model, action, data = []){
@@ -292,13 +315,15 @@
                             case 'register':
                             {
                                 this.modal = 1;
-                                this.titleModal = 'Registrar Cliente';
+                                this.titleModal = 'Registrar Proveedor';
                                 this.namec='';
                                 this.type_doc='DNI';
                                 this.doc_num='';
                                 this.address='';
                                 this.phone_num='';
                                 this.email='';
+                                this.contact='';
+                                this.contact_phone='';
                                 this.typeAction = 1;
                                 break;
                             }
@@ -306,7 +331,7 @@
                             {
                                 //console.log(data);
                                 this.modal=1;
-                                this.titleModal = 'Actualizar Cliente';
+                                this.titleModal = 'Actualizar Proveedor';
                                 this.typeAction = 2;
                                 this.client_id = data['id'];
                                 this.namec=data['namec'];
@@ -315,6 +340,8 @@
                                 this.address=data['address'];
                                 this.phone_num=data['phone_num'];
                                 this.email=data['email'];
+                                this.contact=data['contact'];
+                                this.contact_phone=['contact_phone'];
                                 break;  
                             }
                         }

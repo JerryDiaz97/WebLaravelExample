@@ -22,10 +22,12 @@ window.Vue = require('vue');
 import Category from './components/Category'
 import Client from './components/Client'
 import Product from './components/Product'
+import Provider from './components/Provider'
 
 Vue.component('category', Category);
 Vue.component('client', Client);
 Vue.component('product', Product);
+Vue.component('provider', Provider);
 
 const app = new Vue({
     el: '#app',
