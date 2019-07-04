@@ -10,9 +10,9 @@ class Role extends Model
     protected $fillable = ['namer','description','condition'];
     public $timestamps = false;
 
-    /* public function users()
+    public function users()
     {
         return $this->hasMany('App\User');
     }
- */
+
 }

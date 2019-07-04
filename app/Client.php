@@ -11,4 +11,8 @@ class Client extends Model
     public function provider(){
         return $this->hasOne('App\Provider');
     }
+
+    public function user(){
+        return $this->hasOne('App\User');
+    }
 }
