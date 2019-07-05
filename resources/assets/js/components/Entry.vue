@@ -8,8 +8,8 @@
                 <!-- Example Listing table -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fa fa-align-justify"></i> Usuarios
-                        <button type="button" @click="openModal('client','register')" class="btn btn-secondary">
+                        <i class="fa fa-align-justify"></i> Ingresos
+                        <button type="button" @click="openModal('entry','register')" class="btn btn-secondary">
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
                     </div>
@@ -18,58 +18,56 @@
                             <div class="col-md-6">
                                 <div class="input-group">
                                     <select class="form-control col-md-3" v-model="criterion">
-                                      <option value="namec">Nombre</option>
-                                      <option value="doc_num">Documento</option>
-                                      <option value="email">Email</option>
-                                      <option value="phone_num">Teléfono</option>
+                                      <option value="type_voucher">Tipo de Comprobante</option>
+                                      <option value="voucher_num">Numero de Comprobante</option>
+                                      <option value="date_hour">Fecha y hora</option>
                                     </select>
-                                    <input type="text" v-model="find" @keyup.enter="listClient(1,find,criterion)" class="form-control" placeholder="Texto a buscar">
-                                    <button type="submit" @click="listClient(1,find,criterion)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                    <input type="text" v-model="find" @keyup.enter="listEntry(1,find,criterion)" class="form-control" placeholder="Texto a buscar">
+                                    <button type="submit" @click="listEntry(1,find,criterion)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                                 </div>
                             </div>
                         </div>
-                        <table class="table table-bordered table-striped table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Opciones</th>
-                                    <th>Nombre</th>
-                                    <th>Tipo de documento</th>
-                                    <th>Número</th>
-                                    <th>Dirección</th>
-                                    <th>Teléfono</th>
-                                    <th>Email</th>
-                                    <th>Usuario</th>
-                                    <th>Rol</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="client in arrayClient" :key="client.id">
-                                    <td>
-                                        <button type="button" @click="openModal('client','update',client)" class="btn btn-warning btn-sm">
-                                          <i class="icon-pencil"></i>
-                                        </button>&nbsp;
-                                        <template v-if="client.condition">
-                                            <button type="button" class="btn btn-danger btn-sm" @click="deactivateUser(client.id)">
-                                                <i class="icon-trash"></i>
-                                            </button>
-                                        </template>
-                                        <template v-else>
-                                            <button type="button" class="btn btn-info btn-sm" @click="activateUser(client.id)">
-                                                <i class="icon-check"></i>
-                                            </button>
-                                        </template> 
-                                    </td>
-                                    <td v-text="client.namec"></td>
-                                    <td v-text="client.type_doc"></td>
-                                    <td v-text="client.doc_num"></td>
-                                    <td v-text="client.address"></td>
-                                    <td v-text="client.phone_num"></td>
-                                    <td v-text="client.email"></td> 
-                                    <td v-text="client.user_name"></td>
-                                    <td v-text="client.namer"></td>                                              
-                                </tr>                                
-                            </tbody>
-                        </table>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Opciones</th>
+                                        <th>Usuario</th>
+                                        <th>Proveedor</th>
+                                        <th>Tipo de Comprobante</th>
+                                        <th>Serie del Comprobante</th>
+                                        <th>Número del Comprobante</th>
+                                        <th>Fecha y hora</th>
+                                        <th>Total</th>
+                                        <th>Impuesto</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="entry in arrayEntry" :key="entry.id">
+                                        <td>
+                                            <button type="button" @click="openModal('entry','update',entry)" class="btn btn-success btn-sm">
+                                            <i class="icon-eye"></i>
+                                            </button>&nbsp;
+                                            <template v-if="entry.status=='Registrado'">
+                                                <button type="button" class="btn btn-danger btn-sm" @click="deactivateEntry(entry.id)">
+                                                    <i class="icon-trash"></i>
+                                                </button>
+                                            </template>
+                                        </td>
+                                        <td v-text="entry.user_name"></td>
+                                        <td v-text="entry.namec"></td>
+                                        <td v-text="entry.type_voucher"></td>
+                                        <td v-text="entry.voucher_series"></td>
+                                        <td v-text="entry.voucher_num"></td>
+                                        <td v-text="entry.date_hour"></td>
+                                        <td v-text="entry.total"></td>
+                                        <td v-text="entry.taxes"></td>
+                                        <td v-text="entry.status"></td>                                            
+                                    </tr>                                
+                                </tbody>
+                            </table>
+                        </div>
                         <nav>
                             <ul class="pagination">
                                 <li class="page-item" v-if="pagination.current_page > 1">
@@ -192,23 +190,21 @@
     export default {
         data (){
             return {
-                client_id: 0,
-                namec : '',
-                type_doc : 'DNI',
-                doc_num : '',
-                address : '',
-                phone_num : '',
-                email : '',
-                user_name : '',
-                password : '',
-                id_role : 0,
-                arrayClient : [],
-                arrayRole : [],
+                id_entry: 0,
+                id_provider : 0,
+                namec: '',
+                type_voucher : 'Boleta',
+                voucher_series : '',
+                voucher_num : '',
+                taxes : 0.16,
+                total : 0.0,
+                arrayEntry: [],
+                arrayDetail: [],
                 modal : 0,
                 titleModal : '',
                 typeAction : 0,
-                errorClient : 0,
-                errorShowMsnClient : [],
+                errorEntry : 0,
+                errorShowMsnEntry : [],
                 pagination : {
                     'total' : 0,
                     'current_page' : 0,
@@ -218,23 +214,23 @@
                     'to' : 0,
                 },
                 offset : 3,
-                criterion : 'namec',
+                criterion : 'voucher_num',
                 find : ''
             }
         },
         mounted() {
-            this.listClient(1,this.find,this.criterion);
+            this.listEntry(1,this.find,this.criterion);
         },
         methods : {
-            listClient (page, find, criterion){
+            listEntry (page, find, criterion){
                 const axios = require('axios');
                 let me=this;
-                var url = '/user?page=' + page +'&find=' + find + '&criterion=' + criterion;
+                var url = '/entry?page=' + page +'&find=' + find + '&criterion=' + criterion;
                 axios.get(url).then(function (response) {
                     var answer = response.data
                     console.log(response.data)
                     //me.arrayCategory = response.data.categories.data;
-                    me.arrayClient = answer.clients.data;
+                    me.arrayEntry = answer.entries.data;
                     me.pagination = answer.pagination;
                 })
                 .catch(function (error) {
@@ -268,7 +264,7 @@
                 //Update to the current page
                 me.pagination.current_page = page;
                 //Send a petition to view the page data
-                me.listClient(page, find, criterion);
+                me.listEntry(page, find, criterion);
             },
             registerClient(){
                 if (this.validateClient()){
