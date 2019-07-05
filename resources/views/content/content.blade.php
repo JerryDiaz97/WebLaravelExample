@@ -2,58 +2,115 @@
     @extends('main')
     @section('content')
 
-    <template v-if = "menu == 0">   
-    <!--Reference to the vue component-->
-        <h1>Contenido del Menú 0</h1>
-    </template>
+    @if(Auth::check())
+            @if(Auth::user()->id_role == 1)
+                <template v-if = "menu == 0">   
+                <!--Reference to the vue component-->
+                    <h1>Escritorio</h1>
+                </template>
 
-    <template v-if = "menu == 1">   
-        <category></category>
-    </template>
+                <template v-if = "menu == 1">   
+                    <category></category>
+                </template>
 
-    <template v-if = "menu == 2">   
-        <product></product>
-    </template>
+                <template v-if = "menu == 2">   
+                    <product></product>
+                </template>
 
-    <template v-if = "menu == 3">   
-        <h1>Contenido del Menú 3</h1>
-    </template>
+                <template v-if = "menu == 3">   
+                    <h1>Ingresos</h1>
+                </template>
 
-    <template v-if = "menu == 4">   
-        <provider></provider>
-    </template>
+                <template v-if = "menu == 4">   
+                    <provider></provider>
+                </template>
 
-    <template v-if = "menu == 5">   
-        <h1>Contenido del Menú 5</h1>
-    </template>
+                <template v-if = "menu == 5">   
+                    <h1>Ventas</h1>
+                </template>
 
-    <template v-if = "menu == 6">   
-        <client></client>
-    </template>
+                <template v-if = "menu == 6">   
+                    <client></client>
+                </template>
 
-    <template v-if = "menu == 7">   
-        <user></user>
-    </template>
+                <template v-if = "menu == 7">   
+                    <user></user>
+                </template>
 
-    <template v-if = "menu == 8">   
-        <role></rol>
-    </template>
+                <template v-if = "menu == 8">   
+                    <role></role>
+                </template>
 
-    <template v-if = "menu == 9">   
-        <h1>Contenido del Menú 9</h1>
-    </template>
+                <template v-if = "menu == 9">   
+                    <h1>Reporte Ingresos</h1>
+                </template>
 
-    <template v-if = "menu == 10">   
-        <h1>Contenido del Menú 10</h1>
-    </template>
+                <template v-if = "menu == 10">   
+                    <h1>Reporte de Ventas</h1>
+                </template>
 
-    <template v-if = "menu == 11">   
-        <h1>Contenido del Menú 11</h1>
-    </template>
+                <template v-if = "menu == 11">   
+                    <h1>Ayuda</h1>
+                </template>
 
-    <template v-if = "menu == 12">   
-        <h1>Contenido del Menú 12</h1>
-    </template>
-    
+                <template v-if = "menu == 12">   
+                    <h1>Acerca de</h1>
+                </template>
+
+            @elseif(Auth::user()->id_role ==2)
+                <template v-if = "menu == 5">   
+                    <h1>Ventas</h1>
+                </template>
+
+                <template v-if = "menu == 6">   
+                    <client></client>
+                </template>
+                
+                <template v-if = "menu == 10">   
+                    <h1>Reporte de Ventas</h1>
+                </template>
+
+                <template v-if = "menu == 11">   
+                    <h1>Ayuda</h1>
+                </template>
+
+                <template v-if = "menu == 12">   
+                    <h1>Acerca de</h1>
+                </template>
+
+            @elseif(Auth::user()->id_role ==3)
+                <template v-if = "menu == 1">   
+                    <category></category>
+                </template>
+
+                <template v-if = "menu == 2">   
+                    <product></product>
+                </template>
+
+                <template v-if = "menu == 3">   
+                    <h1>Ingresos</h1>
+                </template>
+
+                <template v-if = "menu == 4">   
+                    <provider></provider>
+                </template>
+
+                <template v-if = "menu == 9">   
+                    <h1>Reporte Ingresos</h1>
+                </template>
+
+                <template v-if = "menu == 11">   
+                    <h1>Ayuda</h1>
+                </template>
+
+                <template v-if = "menu == 12">   
+                    <h1>Acerca de</h1>
+                </template>
+
+            @else
+            
+            @endif
+    @endif
+        
     @endsection
 <!-- /End of the main content -->
