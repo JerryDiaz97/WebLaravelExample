@@ -10,7 +10,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        //if (!$request->ajax()) return redirect('/');
+        if (!$request->ajax()) return redirect('/');
         $find = $request->find;
         $criterion = $request->criterion;
 
@@ -42,6 +42,31 @@ class ProductController extends Controller
             'products' => $products
 
         ];
+    }
+
+    public function listProduct(Request $request)
+    {
+        if (!$request->ajax()) return redirect('/');
+        $find = $request->find;
+        $criterion = $request->criterion;
+
+        if($find == ''){
+            $products = Product::join('categories','products.idcategory','=','categories.id')
+            ->select('products.id','products.idcategory','products.code','products.nameProd','categories.name',
+            'products.sale_price','products.stock','products.descriptionProd','products.conditionProd')            
+            ->orderBy('products.id','desc')->paginate(10);
+        }
+        else{
+
+            $products = Product::join('categories','products.idcategory','=','categories.id')
+            ->select('products.id','products.idcategory','products.code','products.nameProd','categories.name',
+            'products.sale_price','products.stock','products.descriptionProd','products.conditionProd')
+            ->where('products.'.$criterion, 'like', '%'. $find .'%')            
+            ->orderBy('products.id','desc')->paginate(10);
+            
+        }
+        
+        return ['products' => $products];
     }
 
     public function findProduct(Request $request){

@@ -396,7 +396,6 @@ import VueBarcode from 'vue-barcode';
                 }
                 })
             },
-
             validateProduct(){
                 this.errorProduct=0;
                 this.errorShowMsnProduct =[];

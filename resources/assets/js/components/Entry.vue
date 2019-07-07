@@ -135,7 +135,7 @@
                                     <label>Artículo <span style="color:red;" v-show="id_product==0">(*Seleccione)</span></label>
                                     <div class="form-inline">
                                         <input type="text" class="form-control" v-model="code" @keyup.enter="findProduct" placeholder="Ingrese artículo">
-                                        <button class="btn btn-primary">...</button>
+                                        <button @click="openModal()" class="btn btn-primary">...</button>
                                         <input type="text" readonly class="form-control" v-model="product">
                                     </div>
                                 </div>
@@ -196,11 +196,11 @@
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
                                             <td colspan="4" align="right"><strong>Total del Impuesto:</strong></td>
-                                            <td>$ 1</td>
+                                            <td>$ {{taxestotal = ((total*taxes)/(1+taxes)).toFixed(2)}}</td>
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
                                             <td colspan="4" align="right"><strong>Total Neto:</strong></td>
-                                            <td>$ 6</td>
+                                            <td>$ {{total = calculateTotal}}</td>
                                         </tr>
                                     </tbody>
                                     <tbody v-else>
@@ -237,7 +237,57 @@
                             </button>
                         </div>
                         <div class="modal-body">
-
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <select class="form-control col-md-3" v-model="criterionP">
+                                        <option value="name">Nombre</option>
+                                        <option value="description">Descripción</option>
+                                        <option value="code">Código</option>
+                                        </select>
+                                        <input type="text" v-model="findP" @keyup.enter="listProduct(findP,criterionP)" class="form-control" placeholder="Texto a buscar">
+                                        <button type="submit" @click="listProduct(findP,criterionP)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="table-resposive">
+                                <table class="table table-bordered table-striped table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Opciones</th>
+                                            <th>Código de barras</th>
+                                            <th>Nombre</th>
+                                            <th>Categoría</th>
+                                            <th>Precio de venta</th>
+                                            <th>Stock</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="product in arrayProduct" :key="product.id">
+                                            <td>
+                                                <button type="button" @click="addDetailModal(product)" class="btn btn-success btn-sm">
+                                                <i class="icon-check"></i>
+                                                </button> 
+                                            </td>
+                                            <td v-text="product.code"></td>
+                                            <td v-text="product.nameProd"></td>
+                                            <td v-text="product.name"></td>
+                                            <td v-text="product.sale_price"></td>
+                                            <td v-text="product.stock"></td>
+                                            <td>
+                                                <div v-if="product.conditionProd">
+                                                    <span class="badge badge-success">Activo</span>
+                                                </div>
+                                                <div v-else>
+                                                    <span class="badge badge-danger">Desactivado</span>
+                                                </div>
+                                                
+                                            </td>
+                                        </tr>                                
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="closeModal()">Cerrar</button>
@@ -266,6 +316,8 @@
                 voucher_num : '',
                 taxes : 0.16,
                 total : 0.0,
+                taxestotal : 0.0,
+                subtotal : 0.0,
                 arrayEntry: [],
                 arrayProvider: [],
                 arrayDetail: [],
@@ -286,6 +338,8 @@
                 offset : 3,
                 criterion : 'voucher_num',
                 find : '',
+                criterionA : 'nameProd',
+                findP : '',  
                 arrayProduct : [],
                 id_product : 0,
                 code : '',
@@ -367,7 +421,6 @@
                     console.log(error);
                 })                
             },
-
             changePage(page, find, criterion) {
                 let me  = this;
                 //Update to the current page
@@ -419,6 +472,28 @@
                 }
                             
             },
+            addDetailModal(data = []){
+
+            },
+            listProduct (find, criterion){
+                const axios = require('axios');
+                let me=this;
+                var url = '/product/listProduct?page='+ find + '&criterion=' + criterion;
+
+                axios.get(url).then(function (response) {
+                    var answer = response.data
+                    //console.log(response.data)
+                    //me.arrayCategory = response.data.categories.data;
+                    me.arrayProduct = answer.products.data;
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+                .finally(function () {
+                    // always executed
+                });
+            },
             registerClient(){
                 if (this.validateClient()){
                     return;
@@ -435,30 +510,6 @@
                     'user_name': this.user_name,
                     'password': this.password,
                     'id_role': this.id_role
-                }).then(function (response) {
-                    me.closeModal();
-                    me.listClient(1,'','namec');
-                }).catch(function (error) {
-                    console.log(error);
-                });
-            },
-            updateClient(){
-                if (this.validateClient()){
-                    return;
-                }
-                
-                let me = this;
-                axios.put('/user/update',{
-                    'namec': this.namec,
-                    'type_doc': this.type_doc,
-                    'doc_num': this.doc_num,
-                    'address': this.address,
-                    'phone_num': this.phone_num,
-                    'email': this.email,
-                    'user_name': this.user_name,
-                    'password': this.password,
-                    'id_role': this.id_role,
-                    'id': this.client_id 
                 }).then(function (response) {
                     me.closeModal();
                     me.listClient(1,'','namec');
@@ -566,67 +617,16 @@
             },
             closeModal(){
                 this.modal=0;
-                this.titleModal='';
-                this.namec='';
-                this.type_doc='DNI';
-                this.doc_num='';
-                this.address='';
-                this.phone_num='';
-                this.email='';
-                this.user_name='';
-                this.password='';
-                this.id_role=0;
-                this.errorClient=0;
+                this.titleModal='';                
             },
-            openModal(model, action, data = []){
-                this.selectRole();
-                switch(model){
-                    case "client":
-                    {
-                        switch(action){
-                            case 'register':
-                            {
-                                this.modal = 1;
-                                this.titleModal = 'Registrar Usuario';
-                                this.namec='';
-                                this.type_doc='DNI';
-                                this.doc_num='';
-                                this.address='';
-                                this.phone_num='';
-                                this.email='';
-                                this.user_name='';
-                                this.password='';
-                                this.id_role=0;
-                                this.typeAction = 1;
-                                break;
-                            }
-                            case 'update':
-                            {
-                                //console.log(data);
-                                this.modal=1;
-                                this.titleModal = 'Actualizar Usuario';
-                                this.typeAction = 2;
-                                this.client_id = data['id'];
-                                this.namec = data['namec'];
-                                this.type_doc = data['type_doc'];
-                                this.doc_num = data['doc_num'];
-                                this.address = data['address'];
-                                this.phone_num = data['phone_num'];
-                                this.email = data['email'];
-                                this.user_name = data['user_name'];
-                                this.password = data['password'];
-                                this.id_role = data['id_role'];
-                                break;  
-                            }
-                        }
-                    }
-                }
+            openModal(){                
+                this.modal = 1;
+                this.titleModal = 'Seleccione uno o varios productos';                              
             }
         },
         components : {
             vSelect
         },
-
         computed : {
             isActived: function(){
                 return this.pagination.current_page;
@@ -649,6 +649,13 @@
                     from++;
                 }
                 return pagesArray;
+            },
+            calculateTotal: function(){
+                var resultC = 0.0;
+                for(var i=0; i<this.arrayDetail.length; i++){
+                    resultC = resultC + (this.arrayDetail[i].price*this.arrayDetail[i].amount)
+                }
+                return resultC;
             }
         },
     }

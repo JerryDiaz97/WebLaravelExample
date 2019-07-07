@@ -41,6 +41,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('/product/activate', 'ProductController@activate');
         Route::put('/product/deactivate', 'ProductController@deactivate');
         Route::get('/product/findProduct', 'ProductController@findProduct');
+        Route::get('/product/listProduct', 'ProductController@listProduct');
 
         Route::get('/provider', 'ProviderController@index');
         Route::post('/provider/register', 'ProviderController@store');
@@ -73,6 +74,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('/product/activate', 'ProductController@activate');
         Route::put('/product/deactivate', 'ProductController@deactivate');
         Route::get('/product/findProduct', 'ProductController@findProduct');
+        Route::get('/product/listProduct', 'ProductController@listProduct');
 
         Route::get('/provider', 'ProviderController@index');
         Route::post('/provider/register', 'ProviderController@store');
