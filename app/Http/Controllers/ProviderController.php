@@ -44,6 +44,21 @@ class ProviderController extends Controller
         ];
     }
 
+    public function selectProvider(Request $request){
+
+        if (!$request->ajax()) return redirect('/');
+
+        $filter = $request->filter;
+        $providers = Provider::join('clients','providers.id','=','clients.id')
+        ->where('clients.namec', 'like', '%'. $filter .'%')
+        ->orWhere('clients.doc_num', 'like', '%'. $filter .'%')
+        ->select('clients.id','clients.namec','clients.doc_num')
+        ->orderBy('clients.namec', 'asc')->get();
+
+        return ['providers' => $providers];
+
+    }
+
     public function store(Request $request)
     {
         if (!$request->ajax()) return redirect('/');

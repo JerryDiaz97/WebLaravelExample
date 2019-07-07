@@ -44,6 +44,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/provider', 'ProviderController@index');
         Route::post('/provider/register', 'ProviderController@store');
         Route::put('/provider/update', 'ProviderController@update');
+        Route::get('/provider/selectProvider', 'ProviderController@selectProvider');
         
     });
 
@@ -74,6 +75,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/provider', 'ProviderController@index');
         Route::post('/provider/register', 'ProviderController@store');
         Route::put('/provider/update', 'ProviderController@update');
+        Route::get('/provider/selectProvider', 'ProviderController@selectProvider');
 
         Route::get('/client', 'ClientController@index');
         Route::post('/client/register', 'ClientController@store');
