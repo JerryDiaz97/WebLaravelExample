@@ -44,6 +44,18 @@ class ProductController extends Controller
         ];
     }
 
+    public function findProduct(Request $request){
+        
+        if (!$request->ajax()) return redirect('/');
+
+        $filter = $request->filter;
+        $products = Product::where('code','=',$filter)
+        ->select('id','nameProd')->orderBy('nameProd','asc')->take(1)->get();
+
+        return['products' => $products];
+
+    }
+
     public function store(Request $request)
     {
         if (!$request->ajax()) return redirect('/');

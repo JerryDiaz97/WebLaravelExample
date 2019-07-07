@@ -93,8 +93,11 @@
                             <div class="col-md-9">
                                 <div class="form-group">
                                     <label for="">Proveedor(*)</label>
-                                    <select class="form-control">
-                                        </select>
+                                    <v-select :on-search="selectProvider" label="namec" 
+                                    :options="arrayProvider" placeholder="Buscar Proveedores..."
+                                    :onChange="getProviderData">
+
+                                    </v-select>
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -129,28 +132,29 @@
                         <div class="form-group row border">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>Artículo</label>
+                                    <label>Artículo <span style="color:red;" v-show="id_product==0">(*Seleccione)</span></label>
                                     <div class="form-inline">
-                                        <input type="text" class="form-control" v-model="id_product" placeholder="Ingrese artículo">
+                                        <input type="text" class="form-control" v-model="code" @keyup.enter="findProduct" placeholder="Ingrese artículo">
                                         <button class="btn btn-primary">...</button>
+                                        <input type="text" readonly class="form-control" v-model="product">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label>Precio</label>
+                                    <label>Precio <span style="color:red;" v-show="price==0">(*Ingrese Precio)</span></label>
                                     <input type="number" value="0" step="any" class="form-control" v-model="price">                                      
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <label>Cantidad</label>
+                                    <label>Cantidad <span style="color:red;" v-show="amount==0">(*Ingrese)</span></label>
                                     <input type="number" value="0" class="form-control" v-model="amount">                                      
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
-                                    <button class="btn btn-success form-control btnadd"><i class="icon-plus"></i></button>                                     
+                                    <button @click="addDetail()" class="btn btn-success form-control btnadd"><i class="icon-plus"></i></button>                                     
                                 </div>
                             </div>
                         </div>
@@ -166,24 +170,24 @@
                                             <th>Subtotal</th>
                                         </tr> 
                                     </thead>
-                                    <tbody>
-                                        <tr>
+                                    <tbody v-if="arrayDetail.length">
+                                        <tr v-for="(detail,index) in arrayDetail" :key="detail.id">
                                             <td>
-                                                <button type="button" class="btn btn-danger btn-sm">
+                                                <button @click="deleteDetail(index)" type="button" class="btn btn-danger btn-sm">
                                                     <i class="icon-close"></i>
                                                 </button>
                                             </td>
-                                            <td>
-                                                Artículo n
+                                            <td v-text="detail.product">
+
                                             </td>
                                             <td>
-                                                <input type="number" value="3" class="form-control">
+                                                <input v-model="detail.price" type="number" value="3" class="form-control">
                                             </td>
                                             <td>
-                                                <input type="number" value="2" class="form-control">
+                                                <input v-model="detail.amount" type="number" value="2" class="form-control">
                                             </td>
                                             <td>
-                                                $6.00
+                                                {{detail.price*detail.amount}}
                                             </td>
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
@@ -199,7 +203,13 @@
                                             <td>$ 6</td>
                                         </tr>
                                     </tbody>
-
+                                    <tbody v-else>
+                                        <tr>
+                                            <td colspan="5">
+                                                No hay productos agregados
+                                            </td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                             </div>                            
                         </div>
@@ -244,6 +254,7 @@
 </template>
 
 <script>
+    import vSelect from 'vue-select';
     export default {
         data (){
             return {
@@ -256,6 +267,7 @@
                 taxes : 0.16,
                 total : 0.0,
                 arrayEntry: [],
+                arrayProvider: [],
                 arrayDetail: [],
                 listing : 1,
                 modal : 0,
@@ -273,7 +285,13 @@
                 },
                 offset : 3,
                 criterion : 'voucher_num',
-                find : ''
+                find : '',
+                arrayProduct : [],
+                id_product : 0,
+                code : '',
+                product : '',
+                price : 0,
+                amount : 0
             }
         },
         mounted() {
@@ -299,15 +317,20 @@
                     // always executed
                 });
             },
-            selectRole() {
-                 const axios = require('axios');
+            selectProvider(search, loading) {
+                const axios = require('axios');
                 let me=this;
-                var url = '/role/selectRole';
+                loading(true)
+
+                var url = '/provider/selectProvider?filter='+ search;
                 axios.get(url).then(function (response) {
                     var answer = response.data
-                    console.log(response.data)
+                    q: search
+                    me.arrayProvider=answer.providers;
+                    loading(false)
+                    //console.log(response.data)
                     //me.arrayCategory = response.data.categories.data;
-                    me.arrayRole = answer.roles;
+                    
                 })
                 .catch(function (error) {
                     // handle error
@@ -317,12 +340,84 @@
                     // always executed
                 });
             },
+            getProviderData(val1){
+                let me = this;
+                me.loading = true;
+                me.id_provider = val1.id;
+
+            },
+            findProduct(){
+                let me = this;
+                var url = '/product/findProduct?filter=' + me.code;
+
+                axios.get(url).then(function (response) {
+                    var answer = response.data;
+                    me.arrayProduct = answer.product;
+
+                    if(me.arrayProduct.length>0){
+                        me.product = me.arrayProduct[0]['nameProd'];
+                        me.id_product = me.arrayProduct[0]['id'];
+                    }
+                    else{
+                        me.product = 'No existe artículo';
+                        me.id_product = 0;
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })                
+            },
+
             changePage(page, find, criterion) {
                 let me  = this;
                 //Update to the current page
                 me.pagination.current_page = page;
                 //Send a petition to view the page data
                 me.listEntry(page, find, criterion);
+            },
+            finder(id){
+                var sw = 0;
+                for(var i=0; i<this.arrayDetail.length; i++){
+                    if(this.arrayDetail[i].id_product == id){
+                        sw = true;
+                    }
+                }
+                return sw;
+            },
+            deleteDetail(index){
+                let me = this;
+                me.arrayDetail.splice(index, 1);
+
+            },
+            addDetail(){
+                let me = this;
+                if(me.id_product == 0 || me.amount == 0 || me.price == 0){   
+                }
+                else{
+                    if(me.finder(me.id_product)){
+                        swal({
+                            type: 'error',
+                            title : 'Error...',
+                            text : 'Ese artículo ya se encuentra agregado!',
+
+                        })
+                    }
+                    else{
+                         me.arrayDetail.push({
+                        id_product : me.id_product,
+                        product : me.product,
+                        amount : me.amount,
+                        price : me.price
+                    });
+                    me.code = "";
+                    me.id_product = 0;
+                    me.product = "";
+                    me.amount = 0;
+                    me.price = 0;
+                    }       
+
+                }
+                            
             },
             registerClient(){
                 if (this.validateClient()){
@@ -528,6 +623,10 @@
                 }
             }
         },
+        components : {
+            vSelect
+        },
+
         computed : {
             isActived: function(){
                 return this.pagination.current_page;

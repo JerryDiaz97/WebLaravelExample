@@ -40,6 +40,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('/product/update', 'ProductController@update');
         Route::put('/product/activate', 'ProductController@activate');
         Route::put('/product/deactivate', 'ProductController@deactivate');
+        Route::get('/product/findProduct', 'ProductController@findProduct');
 
         Route::get('/provider', 'ProviderController@index');
         Route::post('/provider/register', 'ProviderController@store');
@@ -71,6 +72,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('/product/update', 'ProductController@update');
         Route::put('/product/activate', 'ProductController@activate');
         Route::put('/product/deactivate', 'ProductController@deactivate');
+        Route::get('/product/findProduct', 'ProductController@findProduct');
 
         Route::get('/provider', 'ProviderController@index');
         Route::post('/provider/register', 'ProviderController@store');
