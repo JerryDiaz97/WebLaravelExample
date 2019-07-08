@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Entry;
-use APP\IncomeDetail;
-
+use App\IncomeDetail;
+use App\User;
+use App\Notifications\NotifyAdmin;
 
 
 class EntryController extends Controller
@@ -109,6 +110,26 @@ class EntryController extends Controller
                 $detail->amount = $det['amount'];
                 $detail->price= $det['price'];
                 $detail->save();
+            }
+
+            $actualDate = datos('Y-m-d');
+            $numSales = DB::table('sales')->whereDate('created_at', $actualDate)->count();
+            $numEntries = DB::table('entries')->whereDate('created_at', $actualDate)->count();
+
+            $arrayData = [
+                'sales' => [
+                            'num' => $numSales,
+                            'msj' => 'Sales'
+                ],
+                'entries' => [
+                            'num' => $numEntries,
+                            'msj' => 'Entries'
+                ]
+            ];
+            $allUsers = User::all();
+
+            foreach($allUsers as $notifyU) {
+                User::findOrFail($notifyU->id)->notify(new NotifyAdmin($arrayData));
             }
 
             DB::commit();

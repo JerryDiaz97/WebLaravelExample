@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Sale;
 use App\SalesDetail;
+use App\User;
+use App\Notifications\NotifyAdmin;
 
 class SaleController extends Controller
 {
@@ -131,6 +133,27 @@ class SaleController extends Controller
                 $detail->discount = $det['discount'];
                 $detail->save();
             }
+
+            $actualDate = datos('Y-m-d');
+            $numSales = DB::table('sales')->whereDate('created_at', $actualDate)->count();
+            $numEntries = DB::table('entries')->whereDate('created_at', $actualDate)->count();
+
+            $arrayData = [
+                'sales' => [
+                            'num' => $numSales,
+                            'msj' => 'Sales'
+                ],
+                'entries' => [
+                            'num' => $numEntries,
+                            'msj' => 'Entries'
+                ]
+            ];
+            $allUsers = User::all();
+
+            foreach($allUsers as $notifyU) {
+                User::findOrFail($notifyU->id)->notify(new NotifyAdmin($arrayData));
+            }
+
 
             DB::commit();
 
