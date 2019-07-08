@@ -46,7 +46,7 @@
                 </template>
 
                 <template v-if = "menu == 10">   
-                    <h1>Reporte de Ventas</h1>
+                    <querysale></querysale>
                 </template>
 
                 <template v-if = "menu == 11">   
@@ -71,7 +71,7 @@
                 </template>
                 
                 <template v-if = "menu == 10">   
-                    <h1>Reporte de Ventas</h1>
+                    <querysale></querysale>
                 </template>
 
                 <template v-if = "menu == 11">   
