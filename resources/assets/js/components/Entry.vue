@@ -14,7 +14,7 @@
                         </button>
                     </div>
                     <!--List-->
-                    <template v-if="listing">
+                    <template v-if="listing==1">
                     <div class="card-body">
                         <div class="form-group row">
                             <div class="col-md-6">
@@ -48,7 +48,7 @@
                                 <tbody>
                                     <tr v-for="entry in arrayEntry" :key="entry.id">
                                         <td>
-                                            <button type="button" @click="openModal('entry','update',entry)" class="btn btn-success btn-sm">
+                                            <button type="button" @click="viewIncome(entry.id)" class="btn btn-success btn-sm">
                                             <i class="icon-eye"></i>
                                             </button>&nbsp;
                                             <template v-if="entry.status=='Registrado'">
@@ -87,7 +87,7 @@
                     </template>
                     <!--End List-->
                     <!--Detail-->
-                    <template v-else>
+                    <template v-else-if="listing==0">
                     <div class="card-body">
                         <div class="form-group row border">
                             <div class="col-md-9">
@@ -127,6 +127,14 @@
                                     <label>Número Comprobante(*)</label>
                                     <input type="text" class="form-control" v-model="voucher_num" placeholder="000xx">
                                 </div>                       
+                            </div>
+                            <div class="col-md-12">
+                                <div v-show="errorEntry" class="form-group row div-error">
+                                    <div class="text-center text-error">
+                                        <div v-for="error in errorShowMsnEntry" :key="error" v-text="error">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group row border">
@@ -222,7 +230,95 @@
                     </div>
                     </template>
                     <!--End Detail-->
-
+                    <!--Show Income-->
+                    <template v-else-if="listing==2">
+                    <div class="card-body">
+                        <div class="form-group row border">
+                            <div class="col-md-9">
+                                <div class="form-group">
+                                    <label for="">Proveedor</label>
+                                    <p v-text="provider">
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="">Impuesto</label>
+                                <p v-text="taxes"></p>
+                            </div>                            
+                            
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Tipo Comprobante</label>
+                                    <p v-text="type_voucher"></p>
+                                </div>                       
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Serie Comprobante</label>
+                                    <p v-text="voucher_series"></p>
+                                </div>                       
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Número Comprobante(*)</label>
+                                    <p v-text="voucher_num"></p>
+                                </div>                       
+                            </div>
+                        </div>
+                        <div class="form-group row border">
+                            <div class="table-responsive col-md-12">
+                                <table class="table table-bordered table-striped table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Artículo</th> 
+                                            <th>Precio</th>  
+                                            <th>Cantidad</th> 
+                                            <th>Subtotal</th>
+                                        </tr> 
+                                    </thead>
+                                    <tbody v-if="arrayDetail.length">
+                                        <tr v-for="detail in arrayDetail" :key="detail.id">                                            
+                                            <td v-text="detail.product">
+                                            </td>
+                                            <td v-text="detail.price">
+                                            </td>
+                                            <td v-text="detail.amount">
+                                            </td>
+                                            <td>
+                                                {{detail.price*detail.amount}}
+                                            </td>
+                                        </tr>
+                                        <tr style="background-color: #CEECF5;">
+                                            <td colspan="3" align="right"><strong>Total Parcial:</strong></td>
+                                            <td>$ 5</td>
+                                        </tr>
+                                        <tr style="background-color: #CEECF5;">
+                                            <td colspan="3" align="right"><strong>Total del Impuesto:</strong></td>
+                                            <td>$ {{taxestotal = ((total*taxes)).toFixed(2)}}</td>
+                                        </tr>
+                                        <tr style="background-color: #CEECF5;">
+                                            <td colspan="3" align="right"><strong>Total Neto:</strong></td>
+                                            <td>$ {{total}}</td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody v-else>
+                                        <tr>
+                                            <td colspan="4">
+                                                No hay productos agregados
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>                            
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-md-12">
+                                <button type="button" @click="hideDetail()" class="btn btn-secondary">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                    </template>
+                    <!--End Show income-->
                 </div>
                 <!-- End listing table example -->
             </div>
@@ -308,8 +404,9 @@
     export default {
         data (){
             return {
-                id_entry: 0,
+                income_id: 0,
                 id_provider : 0,
+                provider : '',
                 namec: '',
                 type_voucher : 'BOLETA',
                 voucher_series : '',
@@ -338,7 +435,7 @@
                 offset : 3,
                 criterion : 'voucher_num',
                 find : '',
-                criterionA : 'nameProd',
+                criterionP : 'nameProd',
                 findP : '',  
                 arrayProduct : [],
                 id_product : 0,
@@ -430,7 +527,7 @@
             },
             finder(id){
                 var sw = 0;
-                for(var i=0; i<this.arrayDetail.length; i++){
+                for(var i=0; i < this.arrayDetail.length; i++){
                     if(this.arrayDetail[i].id_product == id){
                         sw = true;
                     }
@@ -468,12 +565,25 @@
                     me.amount = 0;
                     me.price = 0;
                     }       
-
-                }
-                            
+                }                            
             },
             addDetailModal(data = []){
-
+                let me = this;
+                if(me.finder(data['id'])){
+                    swal({
+                    type: 'error',
+                        title : 'Error...',
+                        text : 'Ese artículo ya se encuentra agregado!',
+                    })
+                }
+                else{
+                    me.arrayDetail.push({
+                    id_product : data['id'],
+                    product : data['nameProd'],
+                    amount : 1,
+                    price : 1
+                });
+                }      
             },
             listProduct (find, criterion){
                 const axios = require('axios');
@@ -494,40 +604,53 @@
                     // always executed
                 });
             },
-            registerClient(){
-                if (this.validateClient()){
+            registerEntry(){
+                if (this.validateEntry()){
                     return;
-                }
-                
+                }                
                 let me = this;
-                axios.post('/user/register',{
-                    'namec': this.namec,
-                    'type_doc': this.type_doc,
-                    'doc_num': this.doc_num,
-                    'address': this.address,
-                    'phone_num': this.phone_num,
-                    'email': this.email,
-                    'user_name': this.user_name,
-                    'password': this.password,
-                    'id_role': this.id_role
+                axios.post('/entry/register',{
+                    'id_provider' : this.id_provider,
+                    'type_voucher': this.type_voucher,
+                    'voucher_series': this.voucher_series,
+                    'voucher_num': this.voucher_num,
+                    'taxes' : this.taxes,
+                    'total' : this.total,
+                    'data' : this.arrayDetail
+                    
                 }).then(function (response) {
-                    me.closeModal();
-                    me.listClient(1,'','namec');
+                    me.listing=1;
+                    me.listEntry(1,'','voucher_num');
+                    me.id_provider=0;
+                    me.type_voucher='BOLETA';
+                    me.voucher_series='';
+                    me.voucher_num='';
+                    me.taxes=0.16;
+                    me.total=0.0;
+                    me.id_product=0;
+                    me.product='';
+                    me.amount=0;
+                    me.price=0;
+                    me.arrayDetail=[];
+
                 }).catch(function (error) {
                     console.log(error);
                 });
             },
-            validateClient(){
-                this.errorClient = 0;
-                this.errorShowMsnClient = [];
-                if (!this.namec) this.errorShowMsnClient.push("El nombre del cliente no puede estar vacío");
-                if (!this.user_name) this.errorShowMsnClient.push("El nombre de usuario no puede estar vacío");
-                if (!this.password) this.errorShowMsnClient.push("La contraseña no puede estar vacío");
-                if (this.id_role==0) this.errorShowMsnClient.push("Debe asignar un rol al usuario");
-                if (this.errorShowMsnClient.length) this.errorClient = 1;
-                return this.errorClient;
+            validateEntry(){
+                this.errorEntry = 0;
+                this.errorShowMsnEntry = [];
+
+                if(this.id_provider == 0) this.errorShowMsnEntry.push("Seleccione un Proveedor");
+                if(this.type_voucher == 0) this.errorShowMsnEntry.push("Seleccione el Tipo de Comprobante");
+                if(!this.voucher_num) this.errorShowMsnEntry.push("Ingrese el número del Comprobante");
+                if(!this.taxes) this.errorShowMsnEntry.push("Ingrese el impuesto de Compra");
+                if(this.arrayDetail.length<=0) this.errorShowMsnEntry.push("Ingrese el Detalle");
+
+                if (this.errorShowMsnEntry.length) this.errorEntry = 1;
+                return this.errorEntry;
             },
-            deactivateUser(id) {
+            deactivateEntry(id) {
                 const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
                     confirmButton: 'btn btn-success',
@@ -536,7 +659,7 @@
                 buttonsStyling: false,
                 })
                 swalWithBootstrapButtons.fire({
-                title: 'Realmente quiere desactivar el Usuario?',
+                title: 'Realmente quiere desactivar el ingreso?',
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Confirmar',
@@ -545,12 +668,12 @@
                 }).then((result) => {
                 if (result.value) {
                     let me = this;
-                    axios.put('/user/deactivate',{
+                    axios.put('/entry/deactivate',{
                         'id': id
                     }).then(function (response) {
-                        me.listClient(1,'','namec');
+                        me.listEntry(1,'','voucher_num');
                         swalWithBootstrapButtons.fire(
-                        'Desactivado',
+                        'Anulado',
                         'Se desactivo el registro',
                         'success'
                     )
@@ -562,64 +685,83 @@
                     result.dismiss === Swal.DismissReason.cancel
                 ) {
                     swalWithBootstrapButtons.fire(
-                    'Cancelado',
-                    'error'
-                    )
-                }
-                })
-            },
-            activateUser(id) {
-                const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-danger'
-                },
-                buttonsStyling: false,
-                })
-                swalWithBootstrapButtons.fire({
-                title: 'Realmente quiere activar este Usuario?',
-                type: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Confirmar',
-                cancelButtonText: 'Cancelar',
-                reverseButtons: true
-                }).then((result) => {
-                if (result.value) {
-                    let me = this;
-                    axios.put('/user/activate',{
-                        'id': id
-                    }).then(function (response) {
-                        me.listClient(1,'','namec');
-                        swalWithBootstrapButtons.fire(
-                        'Activado',
-                        'Se activo el registro',
-                        'success'
-                    )
-                    }).catch(function (error) {
-                        console.log(error);
-                    });
-                } else if (
-                    // Read more about handling dismissals
-                    result.dismiss === Swal.DismissReason.cancel
-                ) {
-                    swalWithBootstrapButtons.fire(
-                    'Cancelado',
-                    'error'
+                    'Cancelado',                    
                     )
                 }
                 })
             },
             showDetail(){
+                let me = this;
+
                 this.listing=0;
+                me.id_provider=0;
+                me.type_voucher='BOLETA';
+                me.voucher_series='';
+                me.voucher_num='';
+                me.taxes=0.16;
+                me.total=0.0;
+                me.id_product=0;
+                me.product='';
+                me.amount=0;
+                me.price=0;
+                me.arrayDetail=[];
             },
             hideDetail(){
                 this.listing=1;
+            },
+            viewIncome(id){
+                const axios = require('axios');
+                let me = this;
+                this.listing=2;
+
+                //Get income data
+                var arrayIncomeTem=[];
+                var url = '/entry/getHeader?id=' + id;
+                axios.get(url).then(function (response) {
+                    var answer = response.data
+                    //console.log(response.data)
+                    //me.arrayCategory = response.data.categories.data;
+                    arrayIncomeTem = answer.entry;
+
+                    me.provider = arrayIncomeTem[0]['namec'];
+                    me.type_voucher = arrayIncomeTem[0]['type_voucher'];
+                    me.voucher_series = arrayIncomeTem[0]['voucher_series'];
+                    me.voucher_num = arrayIncomeTem[0]['voucher_num'];
+                    me.taxes = arrayIncomeTem[0]['taxes'];
+                    me.total = arrayIncomeTem[0]['total'];
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+                .finally(function () {
+                    // always executed
+                });
+
+                //Get details data
+
+                var urld = '/entry/getDetails?id=' + id;
+                axios.get(urld).then(function (response) {
+                    var answer = response.data
+                    //console.log(response.data)
+                    //me.arrayCategory = response.data.categories.data;
+                    me.arrayDetail = answer.details;
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+                .finally(function () {
+                    // always executed
+                });
+
             },
             closeModal(){
                 this.modal=0;
                 this.titleModal='';                
             },
-            openModal(){                
+            openModal(){
+                this.arrayProduct = [];                
                 this.modal = 1;
                 this.titleModal = 'Seleccione uno o varios productos';                              
             }

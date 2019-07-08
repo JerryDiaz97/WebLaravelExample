@@ -34,6 +34,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/entry', 'EntryController@index');
         Route::post('/entry/register', 'EntryController@store');
         Route::put('/entry/deactivate', 'EntryController@deactivate');
+        Route::put('/entry/getHeader', 'EntryController@getHeader');
+        Route::put('/entry/getDetails', 'EntryController@getDetails');
 
         Route::get('/product', 'ProductController@index');
         Route::post('/product/register', 'ProductController@store');
@@ -67,6 +69,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/entry', 'EntryController@index');
         Route::post('/entry/register', 'EntryController@store');
         Route::put('/entry/deactivate', 'EntryController@deactivate');
+        Route::put('/entry/getHeader', 'EntryController@getHeader');
+        Route::put('/entry/getDetails', 'EntryController@getDetails');
 
         Route::get('/product', 'ProductController@index');
         Route::post('/product/register', 'ProductController@store');

@@ -2879,12 +2879,109 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      id_entry: 0,
+      income_id: 0,
       id_provider: 0,
+      provider: '',
       namec: '',
       type_voucher: 'BOLETA',
       voucher_series: '',
@@ -2913,7 +3010,7 @@ __webpack_require__.r(__webpack_exports__);
       offset: 3,
       criterion: 'voucher_num',
       find: '',
-      criterionA: 'nameProd',
+      criterionP: 'nameProd',
       findP: '',
       arrayProduct: [],
       id_product: 0,
@@ -3036,6 +3133,22 @@ __webpack_require__.r(__webpack_exports__);
     },
     addDetailModal: function addDetailModal() {
       var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+      var me = this;
+
+      if (me.finder(data['id'])) {
+        swal({
+          type: 'error',
+          title: 'Error...',
+          text: 'Ese artículo ya se encuentra agregado!'
+        });
+      } else {
+        me.arrayDetail.push({
+          id_product: data['id'],
+          product: data['nameProd'],
+          amount: 1,
+          price: 1
+        });
+      }
     },
     listProduct: function listProduct(find, criterion) {
       var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
@@ -3053,40 +3166,50 @@ __webpack_require__.r(__webpack_exports__);
       })["finally"](function () {// always executed
       });
     },
-    registerClient: function registerClient() {
-      if (this.validateClient()) {
+    registerEntry: function registerEntry() {
+      if (this.validateEntry()) {
         return;
       }
 
       var me = this;
-      axios.post('/user/register', {
-        'namec': this.namec,
-        'type_doc': this.type_doc,
-        'doc_num': this.doc_num,
-        'address': this.address,
-        'phone_num': this.phone_num,
-        'email': this.email,
-        'user_name': this.user_name,
-        'password': this.password,
-        'id_role': this.id_role
+      axios.post('/entry/register', {
+        'id_provider': this.id_provider,
+        'type_voucher': this.type_voucher,
+        'voucher_series': this.voucher_series,
+        'voucher_num': this.voucher_num,
+        'taxes': this.taxes,
+        'total': this.total,
+        'data': this.arrayDetail
       }).then(function (response) {
-        me.closeModal();
-        me.listClient(1, '', 'namec');
+        me.listing = 1;
+        me.listEntry(1, '', 'voucher_num');
+        me.id_provider = 0;
+        me.type_voucher = 'BOLETA';
+        me.voucher_series = '';
+        me.voucher_num = '';
+        me.taxes = 0.16;
+        me.total = 0.0;
+        me.id_product = 0;
+        me.product = '';
+        me.amount = 0;
+        me.price = 0;
+        me.arrayDetail = [];
       })["catch"](function (error) {
         console.log(error);
       });
     },
-    validateClient: function validateClient() {
-      this.errorClient = 0;
-      this.errorShowMsnClient = [];
-      if (!this.namec) this.errorShowMsnClient.push("El nombre del cliente no puede estar vacío");
-      if (!this.user_name) this.errorShowMsnClient.push("El nombre de usuario no puede estar vacío");
-      if (!this.password) this.errorShowMsnClient.push("La contraseña no puede estar vacío");
-      if (this.id_role == 0) this.errorShowMsnClient.push("Debe asignar un rol al usuario");
-      if (this.errorShowMsnClient.length) this.errorClient = 1;
-      return this.errorClient;
+    validateEntry: function validateEntry() {
+      this.errorEntry = 0;
+      this.errorShowMsnEntry = [];
+      if (this.id_provider == 0) this.errorShowMsnEntry.push("Seleccione un Proveedor");
+      if (this.type_voucher == 0) this.errorShowMsnEntry.push("Seleccione el Tipo de Comprobante");
+      if (!this.voucher_num) this.errorShowMsnEntry.push("Ingrese el número del Comprobante");
+      if (!this.taxes) this.errorShowMsnEntry.push("Ingrese el impuesto de Compra");
+      if (this.arrayDetail.length <= 0) this.errorShowMsnEntry.push("Ingrese el Detalle");
+      if (this.errorShowMsnEntry.length) this.errorEntry = 1;
+      return this.errorEntry;
     },
-    deactivateUser: function deactivateUser(id) {
+    deactivateEntry: function deactivateEntry(id) {
       var _this = this;
 
       var swalWithBootstrapButtons = Swal.mixin({
@@ -3097,7 +3220,7 @@ __webpack_require__.r(__webpack_exports__);
         buttonsStyling: false
       });
       swalWithBootstrapButtons.fire({
-        title: 'Realmente quiere desactivar el Usuario?',
+        title: 'Realmente quiere desactivar el ingreso?',
         type: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Confirmar',
@@ -3106,65 +3229,81 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (result) {
         if (result.value) {
           var me = _this;
-          axios.put('/user/deactivate', {
+          axios.put('/entry/deactivate', {
             'id': id
           }).then(function (response) {
-            me.listClient(1, '', 'namec');
-            swalWithBootstrapButtons.fire('Desactivado', 'Se desactivo el registro', 'success');
+            me.listEntry(1, '', 'voucher_num');
+            swalWithBootstrapButtons.fire('Anulado', 'Se desactivo el registro', 'success');
           })["catch"](function (error) {
             console.log(error);
           });
         } else if ( // Read more about handling dismissals
         result.dismiss === Swal.DismissReason.cancel) {
-          swalWithBootstrapButtons.fire('Cancelado', 'error');
-        }
-      });
-    },
-    activateUser: function activateUser(id) {
-      var _this2 = this;
-
-      var swalWithBootstrapButtons = Swal.mixin({
-        customClass: {
-          confirmButton: 'btn btn-success',
-          cancelButton: 'btn btn-danger'
-        },
-        buttonsStyling: false
-      });
-      swalWithBootstrapButtons.fire({
-        title: 'Realmente quiere activar este Usuario?',
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Confirmar',
-        cancelButtonText: 'Cancelar',
-        reverseButtons: true
-      }).then(function (result) {
-        if (result.value) {
-          var me = _this2;
-          axios.put('/user/activate', {
-            'id': id
-          }).then(function (response) {
-            me.listClient(1, '', 'namec');
-            swalWithBootstrapButtons.fire('Activado', 'Se activo el registro', 'success');
-          })["catch"](function (error) {
-            console.log(error);
-          });
-        } else if ( // Read more about handling dismissals
-        result.dismiss === Swal.DismissReason.cancel) {
-          swalWithBootstrapButtons.fire('Cancelado', 'error');
+          swalWithBootstrapButtons.fire('Cancelado');
         }
       });
     },
     showDetail: function showDetail() {
+      var me = this;
       this.listing = 0;
+      me.id_provider = 0;
+      me.type_voucher = 'BOLETA';
+      me.voucher_series = '';
+      me.voucher_num = '';
+      me.taxes = 0.16;
+      me.total = 0.0;
+      me.id_product = 0;
+      me.product = '';
+      me.amount = 0;
+      me.price = 0;
+      me.arrayDetail = [];
     },
     hideDetail: function hideDetail() {
       this.listing = 1;
+    },
+    viewIncome: function viewIncome(id) {
+      var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+
+      var me = this;
+      this.listing = 2; //Get income data
+
+      var arrayIncomeTem = [];
+      var url = '/entry/getHeader?id=' + id;
+      axios.get(url).then(function (response) {
+        var answer = response.data; //console.log(response.data)
+        //me.arrayCategory = response.data.categories.data;
+
+        arrayIncomeTem = answer.entry;
+        me.provider = arrayIncomeTem[0]['namec'];
+        me.type_voucher = arrayIncomeTem[0]['type_voucher'];
+        me.voucher_series = arrayIncomeTem[0]['voucher_series'];
+        me.voucher_num = arrayIncomeTem[0]['voucher_num'];
+        me.taxes = arrayIncomeTem[0]['taxes'];
+        me.total = arrayIncomeTem[0]['total'];
+      })["catch"](function (error) {
+        // handle error
+        console.log(error);
+      })["finally"](function () {// always executed
+      }); //Get details data
+
+      var urld = '/entry/getDetails?id=' + id;
+      axios.get(urld).then(function (response) {
+        var answer = response.data; //console.log(response.data)
+        //me.arrayCategory = response.data.categories.data;
+
+        me.arrayDetail = answer.details;
+      })["catch"](function (error) {
+        // handle error
+        console.log(error);
+      })["finally"](function () {// always executed
+      });
     },
     closeModal: function closeModal() {
       this.modal = 0;
       this.titleModal = '';
     },
     openModal: function openModal() {
+      this.arrayProduct = [];
       this.modal = 1;
       this.titleModal = 'Seleccione uno o varios productos';
     }
@@ -46185,7 +46324,7 @@ var render = function() {
             )
           ]),
           _vm._v(" "),
-          _vm.listing
+          _vm.listing == 1
             ? [
                 _c("div", { staticClass: "card-body" }, [
                   _c("div", { staticClass: "form-group row" }, [
@@ -46318,11 +46457,7 @@ var render = function() {
                                       attrs: { type: "button" },
                                       on: {
                                         click: function($event) {
-                                          return _vm.openModal(
-                                            "entry",
-                                            "update",
-                                            entry
-                                          )
+                                          return _vm.viewIncome(entry.id)
                                         }
                                       }
                                     },
@@ -46496,7 +46631,8 @@ var render = function() {
                   ])
                 ])
               ]
-            : [
+            : _vm.listing == 0
+            ? [
                 _c("div", { staticClass: "card-body" }, [
                   _c("div", { staticClass: "form-group row border" }, [
                     _c("div", { staticClass: "col-md-9" }, [
@@ -46657,6 +46793,36 @@ var render = function() {
                           }
                         })
                       ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-12" }, [
+                      _c(
+                        "div",
+                        {
+                          directives: [
+                            {
+                              name: "show",
+                              rawName: "v-show",
+                              value: _vm.errorEntry,
+                              expression: "errorEntry"
+                            }
+                          ],
+                          staticClass: "form-group row div-error"
+                        },
+                        [
+                          _c(
+                            "div",
+                            { staticClass: "text-center text-error" },
+                            _vm._l(_vm.errorShowMsnEntry, function(error) {
+                              return _c("div", {
+                                key: error,
+                                domProps: { textContent: _vm._s(error) }
+                              })
+                            }),
+                            0
+                          )
+                        ]
+                      )
                     ])
                   ]),
                   _vm._v(" "),
@@ -47072,6 +47238,175 @@ var render = function() {
                   ])
                 ])
               ]
+            : _vm.listing == 2
+            ? [
+                _c("div", { staticClass: "card-body" }, [
+                  _c("div", { staticClass: "form-group row border" }, [
+                    _c("div", { staticClass: "col-md-9" }, [
+                      _c("div", { staticClass: "form-group" }, [
+                        _c("label", { attrs: { for: "" } }, [
+                          _vm._v("Proveedor")
+                        ]),
+                        _vm._v(" "),
+                        _c("p", {
+                          domProps: { textContent: _vm._s(_vm.provider) }
+                        })
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-3" }, [
+                      _c("label", { attrs: { for: "" } }, [_vm._v("Impuesto")]),
+                      _vm._v(" "),
+                      _c("p", { domProps: { textContent: _vm._s(_vm.taxes) } })
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-4" }, [
+                      _c("div", { staticClass: "form-group" }, [
+                        _c("label", [_vm._v("Tipo Comprobante")]),
+                        _vm._v(" "),
+                        _c("p", {
+                          domProps: { textContent: _vm._s(_vm.type_voucher) }
+                        })
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-4" }, [
+                      _c("div", { staticClass: "form-group" }, [
+                        _c("label", [_vm._v("Serie Comprobante")]),
+                        _vm._v(" "),
+                        _c("p", {
+                          domProps: { textContent: _vm._s(_vm.voucher_series) }
+                        })
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "col-md-4" }, [
+                      _c("div", { staticClass: "form-group" }, [
+                        _c("label", [_vm._v("Número Comprobante(*)")]),
+                        _vm._v(" "),
+                        _c("p", {
+                          domProps: { textContent: _vm._s(_vm.voucher_num) }
+                        })
+                      ])
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group row border" }, [
+                    _c("div", { staticClass: "table-responsive col-md-12" }, [
+                      _c(
+                        "table",
+                        {
+                          staticClass:
+                            "table table-bordered table-striped table-sm"
+                        },
+                        [
+                          _vm._m(7),
+                          _vm._v(" "),
+                          _vm.arrayDetail.length
+                            ? _c(
+                                "tbody",
+                                [
+                                  _vm._l(_vm.arrayDetail, function(detail) {
+                                    return _c("tr", { key: detail.id }, [
+                                      _c("td", {
+                                        domProps: {
+                                          textContent: _vm._s(detail.product)
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("td", {
+                                        domProps: {
+                                          textContent: _vm._s(detail.price)
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("td", {
+                                        domProps: {
+                                          textContent: _vm._s(detail.amount)
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("td", [
+                                        _vm._v(
+                                          "\n                                            " +
+                                            _vm._s(
+                                              detail.price * detail.amount
+                                            ) +
+                                            "\n                                        "
+                                        )
+                                      ])
+                                    ])
+                                  }),
+                                  _vm._v(" "),
+                                  _vm._m(8),
+                                  _vm._v(" "),
+                                  _c(
+                                    "tr",
+                                    {
+                                      staticStyle: {
+                                        "background-color": "#CEECF5"
+                                      }
+                                    },
+                                    [
+                                      _vm._m(9),
+                                      _vm._v(" "),
+                                      _c("td", [
+                                        _vm._v(
+                                          "$ " +
+                                            _vm._s(
+                                              (_vm.taxestotal = (
+                                                _vm.total * _vm.taxes
+                                              ).toFixed(2))
+                                            )
+                                        )
+                                      ])
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "tr",
+                                    {
+                                      staticStyle: {
+                                        "background-color": "#CEECF5"
+                                      }
+                                    },
+                                    [
+                                      _vm._m(10),
+                                      _vm._v(" "),
+                                      _c("td", [
+                                        _vm._v("$ " + _vm._s(_vm.total))
+                                      ])
+                                    ]
+                                  )
+                                ],
+                                2
+                              )
+                            : _c("tbody", [_vm._m(11)])
+                        ]
+                      )
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group row" }, [
+                    _c("div", { staticClass: "col-md-12" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-secondary",
+                          attrs: { type: "button" },
+                          on: {
+                            click: function($event) {
+                              return _vm.hideDetail()
+                            }
+                          }
+                        },
+                        [_vm._v("Cerrar")]
+                      )
+                    ])
+                  ])
+                ])
+              ]
+            : _vm._e()
         ],
         2
       )
@@ -47235,7 +47570,7 @@ var render = function() {
                       staticClass: "table table-bordered table-striped table-sm"
                     },
                     [
-                      _vm._m(7),
+                      _vm._m(12),
                       _vm._v(" "),
                       _c(
                         "tbody",
@@ -47452,6 +47787,62 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("tr", [
       _c("td", { attrs: { colspan: "5" } }, [
+        _vm._v(
+          "\n                                            No hay productos agregados\n                                        "
+        )
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("Artículo")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Precio")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Cantidad")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Subtotal")])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("tr", { staticStyle: { "background-color": "#CEECF5" } }, [
+      _c("td", { attrs: { colspan: "3", align: "right" } }, [
+        _c("strong", [_vm._v("Total Parcial:")])
+      ]),
+      _vm._v(" "),
+      _c("td", [_vm._v("$ 5")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", { attrs: { colspan: "3", align: "right" } }, [
+      _c("strong", [_vm._v("Total del Impuesto:")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", { attrs: { colspan: "3", align: "right" } }, [
+      _c("strong", [_vm._v("Total Neto:")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("tr", [
+      _c("td", { attrs: { colspan: "4" } }, [
         _vm._v(
           "\n                                            No hay productos agregados\n                                        "
         )

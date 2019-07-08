@@ -19,7 +19,7 @@ class EntryController extends Controller
         $criterion = $request->criterion;
 
         if($find == ''){
-            $entries = Entry::join('clients','entries.id','=','clients.id')
+            $entries = Entry::join('clients','entries.id_provider','=','clients.id')
             ->join('users', 'entries.id_user','=', 'users.id')        
             ->select('entries.id','entries.type_voucher','entries.voucher_series',
             'entries.voucher_num','entries.date_hour','entries.taxes','entries.total',
@@ -27,7 +27,7 @@ class EntryController extends Controller
             ->orderBy('entries.id','desc')->paginate(3);
         }
         else{
-            $entries = Entry::join('clients','entries.id','=','clients.id')
+            $entries = Entry::join('clients','entries.id_provider','=','clients.id')
             ->join('users', 'entries.id_user','=', 'users.id')        
             ->select('entries.id','entries.type_voucher','entries.voucher_series',
             'entries.voucher_num','entries.date_hour','entries.taxes','entries.total',
@@ -48,6 +48,35 @@ class EntryController extends Controller
             'entries' => $entries
 
         ];
+    }
+
+    public function getHeader(Request $request){
+
+        if (!$request->ajax()) return redirect('/');
+        $id = $request->id;
+
+        $entry = Entry::join('clients','entries.id_provider','=','clients.id')
+        ->join('users', 'entries.id_user','=', 'users.id')        
+        ->select('entries.id','entries.type_voucher','entries.voucher_series',
+        'entries.voucher_num','entries.date_hour','entries.taxes','entries.total',
+        'entries.status','clients.namec','users.user_name')
+        ->where('entries.id','=',$id)
+        ->orderBy('entries.id','desc')->take(1)->get();
+        
+        return ['entry' => $entry];
+    }
+
+    public function getDetails(Request $request){
+
+        if (!$request->ajax()) return redirect('/');
+        $id = $request->id;
+
+        $details = IncomeDetail::join('products','income_details.id_product','=','products.id')       
+        ->select('income_details.amount','income_details.price','products.nameProd as product')
+        ->where('income_details.id_income','=',$id)
+        ->orderBy('income_details.id','desc')->get();
+        
+        return ['details' => $details];
     }
 
     public function store(Request $request)
