@@ -12,6 +12,9 @@
                         <button type="button" @click="openModal('product','register')" class="btn btn-secondary">
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
+                        <button type="button" @click="loadPdf()" class="btn btn-info">
+                            <i class="icon-doc"></i>&nbsp;Reporte
+                        </button>
                     </div>
                     <div class="card-body">
                         <div class="form-group row">
@@ -226,6 +229,9 @@ import VueBarcode from 'vue-barcode';
                 .finally(function () {
                     // always executed
                 });
+            },
+            loadPdf(){
+                window.open('http://localhost:8000/product/listPdf','_blank');
             },
             selectCategory() {
                 const axios = require('axios');

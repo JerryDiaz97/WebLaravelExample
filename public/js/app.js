@@ -3536,6 +3536,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -3588,6 +3591,9 @@ __webpack_require__.r(__webpack_exports__);
         console.log(error);
       })["finally"](function () {// always executed
       });
+    },
+    loadPdf: function loadPdf() {
+      window.open('http://localhost:8000/product/listPdf', '_blank');
     },
     selectCategory: function selectCategory() {
       var axios = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
@@ -48823,6 +48829,23 @@ var render = function() {
             [
               _c("i", { staticClass: "icon-plus" }),
               _vm._v(" Nuevo\n                    ")
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-info",
+              attrs: { type: "button" },
+              on: {
+                click: function($event) {
+                  return _vm.loadPdf()
+                }
+              }
+            },
+            [
+              _c("i", { staticClass: "icon-doc" }),
+              _vm._v(" Reporte\n                    ")
             ]
           )
         ]),

@@ -46,6 +46,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/product/listProduct', 'ProductController@listProduct');
         Route::get('/product/findProductSale', 'ProductController@findProductSale');
         Route::get('/product/listProductSale', 'ProductController@listProductSale');
+        Route::get('/product/listPdf', 'ProductController@listPdf')->name('products_pdf');
 
         Route::get('/provider', 'ProviderController@index');
         Route::post('/provider/register', 'ProviderController@store');
@@ -90,6 +91,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/product/listProduct', 'ProductController@listProduct');
         Route::get('/product/findProductSale', 'ProductController@findProductSale');
         Route::get('/product/listProductSale', 'ProductController@listProductSale');
+        Route::get('/product/listPdf', 'ProductController@listPdf')->name('products_pdf');
 
         Route::get('/provider', 'ProviderController@index');
         Route::post('/provider/register', 'ProviderController@store');

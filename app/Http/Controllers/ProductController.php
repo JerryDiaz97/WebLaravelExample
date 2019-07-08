@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Product;
+use App\Category;
 
 
 class ProductController extends Controller
@@ -95,6 +96,19 @@ class ProductController extends Controller
         
         return ['products' => $products];
     }
+
+    public function listPdf(){
+
+        $products = Product::join('categories','products.idcategory','=','categories.id')
+            ->select('products.id','products.idcategory','products.code','products.nameProd','categories.name',
+            'products.sale_price','products.stock','products.descriptionProd','products.conditionProd')            
+            ->orderBy('products.nameProd','desc')->get();
+
+        $cont = Product::count();
+        $pdf = \PDF::loadView('pdf.productspdf',['products'=>$products,'cont'=>$cont]);
+        return $pdf->download('products.pdf');
+
+    }    
 
     public function findProduct(Request $request){
         
