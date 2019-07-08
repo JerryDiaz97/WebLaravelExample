@@ -25,6 +25,7 @@ import Dashboard from './components/Dashboard'
 import Entry from './components/Entry'
 import Product from './components/Product'
 import Provider from './components/Provider'
+import QueryIncome from './components/QueryIncome'
 import Role from './components/Role'
 import Sale from './components/Sale'
 import User from './components/User'
@@ -35,6 +36,7 @@ Vue.component('dashboard', Dashboard);
 Vue.component('entry', Entry);
 Vue.component('product', Product);
 Vue.component('provider', Provider);
+Vue.component('queryincome', QueryIncome);
 Vue.component('role', Role);
 Vue.component('sale', Sale);
 Vue.component('user', User);
