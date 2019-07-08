@@ -5068,7 +5068,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('v-select', vue_select__WEB
       if (me.errorShowMsnSale.length) me.errorSale = 1;
       return me.errorSale;
     },
-    deactivateEntry: function deactivateEntry(id) {
+    deactivateSale: function deactivateSale(id) {
       var _this = this;
 
       var swalWithBootstrapButtons = Swal.mixin({
@@ -5079,7 +5079,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('v-select', vue_select__WEB
         buttonsStyling: false
       });
       swalWithBootstrapButtons.fire({
-        title: 'Realmente quiere desactivar el ingreso?',
+        title: 'Realmente quiere anular esta Venta?',
         type: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Confirmar',
@@ -5088,10 +5088,10 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('v-select', vue_select__WEB
       }).then(function (result) {
         if (result.value) {
           var me = _this;
-          axios.put('/entry/deactivate', {
+          axios.put('/sale/deactivate', {
             'id': id
           }).then(function (response) {
-            me.listEntry(1, '', 'voucher_num');
+            me.listSale(1, '', 'voucher_numS');
             swalWithBootstrapButtons.fire('Anulado', 'Se desactivo el registro', 'success');
           })["catch"](function (error) {
             console.log(error);

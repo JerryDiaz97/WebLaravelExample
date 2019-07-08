@@ -702,7 +702,7 @@
                 if (me.errorShowMsnSale.length) me.errorSale = 1;
                 return me.errorSale;
             },
-            deactivateEntry(id) {
+            deactivateSale(id) {
                 const swalWithBootstrapButtons = Swal.mixin({
                 customClass: {
                     confirmButton: 'btn btn-success',
@@ -711,7 +711,7 @@
                 buttonsStyling: false,
                 })
                 swalWithBootstrapButtons.fire({
-                title: 'Realmente quiere desactivar el ingreso?',
+                title: 'Realmente quiere anular esta Venta?',
                 type: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Confirmar',
@@ -720,10 +720,10 @@
                 }).then((result) => {
                 if (result.value) {
                     let me = this;
-                    axios.put('/entry/deactivate',{
+                    axios.put('/sale/deactivate',{
                         'id': id
                     }).then(function (response) {
-                        me.listEntry(1,'','voucher_num');
+                        me.listSale(1,'','voucher_numS');
                         swalWithBootstrapButtons.fire(
                         'Anulado',
                         'Se desactivo el registro',
