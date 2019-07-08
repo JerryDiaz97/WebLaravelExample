@@ -77,6 +77,28 @@ class SaleController extends Controller
         return ['details' => $details];
     }
 
+    public function pdf(Request $request, $id){
+        $sale = Sale::join('clients','sales.id_client','=','clients.id')
+        ->join('users', 'sales.id_user','=', 'users.id')        
+        ->select('sales.id','sales.type_voucherS','sales.voucher_seriesS',
+        'sales.voucher_numS','sales.created_at','sales.taxesS','sales.totalS',
+        'sales.status','clients.namec','clients.type_doc','clients.doc_num',
+        'clients.address','clients.email','clients.phone_num','users.user_name')
+        ->where('sales.id', '=', $id)
+        ->orderBy('sales.id','desc')->take(1)->get();
+
+        $details = SalesDetail::join('products','sales_details.id_product','=','products.id')
+        ->select('sales_details.amount','sales_details.price','sales_details.discount',
+        'products.nameProd as product')->where('sales_details.id_venta','=',$id)
+        ->orderBy('sales_details.id','desc')->get();
+
+        $salenum = Sale::select('voucher_numS')->where('id',$id)->get();
+
+        $pdf = \PDF::loadView('pdf.sale', ['sale'=>$sale,'details'=>$details]);
+        return $pdf->download('sale-'.$salenum[0]->voucher_numS.'.pdf');
+
+    }
+
     public function store(Request $request)
     {
         if (!$request->ajax()) return redirect('/');
@@ -111,6 +133,10 @@ class SaleController extends Controller
             }
 
             DB::commit();
+
+            return[
+                'id' => $sale->id
+            ];
 
         } catch(Exception $e){
             DB::rollBack();

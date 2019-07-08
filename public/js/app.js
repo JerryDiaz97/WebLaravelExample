@@ -4809,6 +4809,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 
 vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('v-select', vue_select__WEBPACK_IMPORTED_MODULE_1___default.a);
@@ -4923,6 +4926,9 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('v-select', vue_select__WEB
       })["catch"](function (error) {
         console.log(error);
       });
+    },
+    pdfSale: function pdfSale(id) {
+      window.open('http://localhost:8000/sale/pdf/' + id + ',' + '_blank');
     },
     changePage: function changePage(page, find, criterion) {
       var me = this; //Update to the current page
@@ -5051,6 +5057,7 @@ vue__WEBPACK_IMPORTED_MODULE_0___default.a.component('v-select', vue_select__WEB
         me.code = '';
         me.discount = 0;
         me.arrayDetail = [];
+        window.open('http://localhost:8000/sale/pdf/' + response.data.id + ',' + '_blank');
       })["catch"](function (error) {
         console.log(error);
       });
@@ -50826,6 +50833,22 @@ var render = function() {
                                       }
                                     },
                                     [_c("i", { staticClass: "icon-eye" })]
+                                  ),
+                                  _vm._v(
+                                    " \n                                        "
+                                  ),
+                                  _c(
+                                    "button",
+                                    {
+                                      staticClass: "btn btn-info btn-sm",
+                                      attrs: { type: "button" },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.pdfSale(sale.id)
+                                        }
+                                      }
+                                    },
+                                    [_c("i", { staticClass: "icon-doc" })]
                                   ),
                                   _vm._v(
                                     " \n                                        "

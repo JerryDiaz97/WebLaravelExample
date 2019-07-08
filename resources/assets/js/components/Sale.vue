@@ -51,6 +51,9 @@
                                             <button type="button" @click="viewSale(sale.id)" class="btn btn-success btn-sm">
                                             <i class="icon-eye"></i>
                                             </button>&nbsp;
+                                            <button type="button" @click="pdfSale(sale.id)" class="btn btn-info btn-sm">
+                                            <i class="icon-doc"></i>
+                                            </button>&nbsp;
                                             <template v-if="sale.status=='Registrado'">
                                                 <button type="button" class="btn btn-danger btn-sm" @click="deactivateSale(sale.id)">
                                                     <i class="icon-trash"></i>
@@ -542,6 +545,9 @@
                     console.log(error);
                 })                
             },
+            pdfSale(id){
+                window.open('http://localhost:8000/sale/pdf/'+ id + ',' + '_blank');
+            },
             changePage(page, find, criterion) {
                 let me  = this;
                 //Update to the current page
@@ -675,6 +681,7 @@
                     me.code='';
                     me.discount=0;
                     me.arrayDetail=[];
+                    window.open('http://localhost:8000/sale/pdf/' + response.data.id + ',' + '_blank');
 
                 }).catch(function (error) {
                     console.log(error);

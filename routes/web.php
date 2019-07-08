@@ -66,6 +66,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('/sale/deactivate', 'SaleController@deactivate');
         Route::put('/sale/getHeader', 'SaleController@getHeader');
         Route::put('/sale/getDetails', 'SaleController@getDetails');
+        Route::get('/sale/pdf/{id}','SaleController@pdf')->name('sale_pdf');
     });
     
     Route::group(['middleware' => ['Administrador']], function () {
@@ -111,6 +112,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('/sale/deactivate', 'SaleController@deactivate');
         Route::put('/sale/getHeader', 'SaleController@getHeader');
         Route::put('/sale/getDetails', 'SaleController@getDetails');
+        Route::get('/sale/pdf/{id}','SaleController@pdf')->name('sale_pdf');
         
         Route::get('/user', 'UserController@index');
         Route::post('/user/register', 'UserController@store');
