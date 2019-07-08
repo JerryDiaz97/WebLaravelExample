@@ -8,7 +8,7 @@
                 <!-- Example Listing table -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fa fa-align-justify"></i> Ingresos
+                        <i class="fa fa-align-justify"></i> Ventas
                         <button type="button" @click="showDetail()" class="btn btn-secondary">
                             <i class="icon-plus"></i>&nbsp;Nuevo
                         </button>
@@ -20,12 +20,12 @@
                             <div class="col-md-6">
                                 <div class="input-group">
                                     <select class="form-control col-md-3" v-model="criterion">
-                                      <option value="type_voucher">Tipo de Comprobante</option>
-                                      <option value="voucher_num">Numero de Comprobante</option>
-                                      <option value="date_hour">Fecha y hora</option>
+                                      <option value="type_voucherS">Tipo de Comprobante</option>
+                                      <option value="voucher_numS">Numero de Comprobante</option>
+                                      <option value="date_hourS">Fecha y hora</option>
                                     </select>
-                                    <input type="text" v-model="find" @keyup.enter="listEntry(1,find,criterion)" class="form-control" placeholder="Texto a buscar">
-                                    <button type="submit" @click="listEntry(1,find,criterion)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                    <input type="text" v-model="find" @keyup.enter="listSale(1,find,criterion)" class="form-control" placeholder="Texto a buscar">
+                                    <button type="submit" @click="listSale(1,find,criterion)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                                 </div>
                             </div>
                         </div>
@@ -35,7 +35,7 @@
                                     <tr>
                                         <th>Opciones</th>
                                         <th>Usuario</th>
-                                        <th>Proveedor</th>
+                                        <th>Cliente</th>
                                         <th>Tipo de Comprobante</th>
                                         <th>Serie del Comprobante</th>
                                         <th>Número del Comprobante</th>
@@ -46,26 +46,26 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="entry in arrayEntry" :key="entry.id">
+                                    <tr v-for="sale in arraySale" :key="sale.id">
                                         <td>
-                                            <button type="button" @click="viewIncome(entry.id)" class="btn btn-success btn-sm">
+                                            <button type="button" @click="viewSale(sale.id)" class="btn btn-success btn-sm">
                                             <i class="icon-eye"></i>
                                             </button>&nbsp;
-                                            <template v-if="entry.status=='Registrado'">
-                                                <button type="button" class="btn btn-danger btn-sm" @click="deactivateEntry(entry.id)">
+                                            <template v-if="sale.status=='Registrado'">
+                                                <button type="button" class="btn btn-danger btn-sm" @click="deactivateSale(sale.id)">
                                                     <i class="icon-trash"></i>
                                                 </button>
                                             </template>
                                         </td>
-                                        <td v-text="entry.user_name"></td>
-                                        <td v-text="entry.namec"></td>
-                                        <td v-text="entry.type_voucher"></td>
-                                        <td v-text="entry.voucher_series"></td>
-                                        <td v-text="entry.voucher_num"></td>
-                                        <td v-text="entry.date_hour"></td>
-                                        <td v-text="entry.total"></td>
-                                        <td v-text="entry.taxes"></td>
-                                        <td v-text="entry.status"></td>                                            
+                                        <td v-text="sale.user_name"></td>
+                                        <td v-text="sale.namec"></td>
+                                        <td v-text="sale.type_voucherS"></td>
+                                        <td v-text="sale.voucher_seriesS"></td>
+                                        <td v-text="sale.voucher_numS"></td>
+                                        <td v-text="sale.date_hourS"></td>
+                                        <td v-text="sale.totalS"></td>
+                                        <td v-text="sale.taxesS"></td>
+                                        <td v-text="sale.status"></td>                                            
                                     </tr>                                
                                 </tbody>
                             </table>
@@ -92,23 +92,26 @@
                         <div class="form-group row border">
                             <div class="col-md-9">
                                 <div class="form-group">
-                                    <label for="">Proveedor(*)</label>
-                                    <v-select :on-search="selectProvider" label="namec" 
-                                    :options="arrayProvider" placeholder="Buscar Proveedores..."
-                                    :onChange="getProviderData">
+                                    <label for="">Cliente(*)</label>
+                                    <v-select
+                                    :on-search="selectClient" 
+                                    label="namec" 
+                                    :options="arrayClient" 
+                                    placeholder="Buscar Clientes..."
+                                    :onChange="getClientData">
 
                                     </v-select>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <label for="">Impuesto(*)</label>
-                                <input type="text" class="form-control" v-model="taxes">
+                                <input type="text" class="form-control" v-model="taxesS">
                             </div>                            
                             
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Tipo Comprobante(*)</label>
-                                    <select class="form-control" v-model="type_voucher">
+                                    <select class="form-control" v-model="type_voucherS">
                                         <option value="0">Seleccione</option>
                                         <option value="BOLETA">Boleta</option>
                                         <option value="FACTURA">Factura</option>
@@ -119,26 +122,26 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Serie Comprobante</label>
-                                    <input type="text" class="form-control" v-model="voucher_series" placeholder="000x">
+                                    <input type="text" class="form-control" v-model="voucher_seriesS" placeholder="000x">
                                 </div>                       
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Número Comprobante(*)</label>
-                                    <input type="text" class="form-control" v-model="voucher_num" placeholder="000xx">
+                                    <input type="text" class="form-control" v-model="voucher_numS" placeholder="000xx">
                                 </div>                       
                             </div>
                             <div class="col-md-12">
-                                <div v-show="errorEntry" class="form-group row div-error">
+                                <div v-show="errorSale" class="form-group row div-error">
                                     <div class="text-center text-error">
-                                        <div v-for="error in errorShowMsnEntry" :key="error" v-text="error">
+                                        <div v-for="error in errorShowMsnSale" :key="error" v-text="error">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group row border">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Artículo <span style="color:red;" v-show="id_product==0">(*Seleccione)</span></label>
                                     <div class="form-inline">
@@ -162,6 +165,12 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="form-group">
+                                    <label>Descuento</label>
+                                    <input type="number" value="0" class="form-control" v-model="discount">                                      
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
                                     <button @click="addDetail()" class="btn btn-success form-control btnadd"><i class="icon-plus"></i></button>                                     
                                 </div>
                             </div>
@@ -174,7 +183,8 @@
                                             <th>Opciones</th>
                                             <th>Artículo</th> 
                                             <th>Precio</th>  
-                                            <th>Cantidad</th> 
+                                            <th>Cantidad</th>
+                                            <th>Descuento</th> 
                                             <th>Subtotal</th>
                                         </tr> 
                                     </thead>
@@ -189,31 +199,36 @@
 
                                             </td>
                                             <td>
-                                                <input v-model="detail.price" type="number" value="3" class="form-control">
+                                                <input v-model="detail.price" type="number" class="form-control">
                                             </td>
                                             <td>
-                                                <input v-model="detail.amount" type="number" value="2" class="form-control">
+                                                <span style="color:red;" v-show="detail.amount>detail.stock">Stock: {{detail.stock}}</span>
+                                                <input v-model="detail.amount" type="number" class="form-control">
                                             </td>
                                             <td>
-                                                {{detail.price*detail.amount}}
+                                                <span style="color:red;" v-show="detail.discount>(detail.price*detail.amount)">Descuento superior</span>
+                                                <input v-model="detail.discount" type="number" class="form-control">
+                                            </td>
+                                            <td>
+                                                {{detail.price*detail.amount-detail.discount}}
                                             </td>
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
-                                            <td colspan="4" align="right"><strong>Total Parcial:</strong></td>
+                                            <td colspan="5" align="right"><strong>Total Parcial:</strong></td>
                                             <td>$ </td>{{subtotal=(total-taxestotal).toFixed(2)}}
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
-                                            <td colspan="4" align="right"><strong>Total del Impuesto:</strong></td>
-                                            <td>$ {{taxestotal = ((total*taxes)/(1+taxes)).toFixed(2)}}</td>
+                                            <td colspan="5" align="right"><strong>Total del Impuesto:</strong></td>
+                                            <td>$ {{taxestotal = ((total*taxesS)/(1+taxesS)).toFixed(2)}}</td>
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
-                                            <td colspan="4" align="right"><strong>Total Neto:</strong></td>
+                                            <td colspan="5" align="right"><strong>Total Neto:</strong></td>
                                             <td>$ {{total = calculateTotal}}</td>
                                         </tr>
                                     </tbody>
                                     <tbody v-else>
                                         <tr>
-                                            <td colspan="5">
+                                            <td colspan="6">
                                                 No hay productos agregados
                                             </td>
                                         </tr>
@@ -224,7 +239,7 @@
                         <div class="form-group row">
                             <div class="col-md-12">
                                 <button type="button" @click="hideDetail()" class="btn btn-secondary">Cerrar</button>
-                                <button type="button" class="btn btn-primary" @click="registerEntry()">Registrar Compra</button>                                
+                                <button type="button" class="btn btn-primary" @click="registerSale()">Registrar Venta</button>                                
                             </div>
                         </div>
                     </div>
@@ -236,32 +251,32 @@
                         <div class="form-group row border">
                             <div class="col-md-9">
                                 <div class="form-group">
-                                    <label for="">Proveedor</label>
-                                    <p v-text="provider">
+                                    <label for="">Cliente</label>
+                                    <p v-text="client">
                                     </p>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <label for="">Impuesto</label>
-                                <p v-text="taxes"></p>
+                                <p v-text="taxesS"></p>
                             </div>                            
                             
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Tipo Comprobante</label>
-                                    <p v-text="type_voucher"></p>
+                                    <p v-text="type_voucherS"></p>
                                 </div>                       
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Serie Comprobante</label>
-                                    <p v-text="voucher_series"></p>
+                                    <p v-text="voucher_seriesS"></p>
                                 </div>                       
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Número Comprobante(*)</label>
-                                    <p v-text="voucher_num"></p>
+                                    <p v-text="voucher_numS"></p>
                                 </div>                       
                             </div>
                         </div>
@@ -272,7 +287,8 @@
                                         <tr>
                                             <th>Artículo</th> 
                                             <th>Precio</th>  
-                                            <th>Cantidad</th> 
+                                            <th>Cantidad</th>
+                                            <th>Descuento</th>  
                                             <th>Subtotal</th>
                                         </tr> 
                                     </thead>
@@ -284,26 +300,28 @@
                                             </td>
                                             <td v-text="detail.amount">
                                             </td>
+                                            <td v-text="detail.discount">
+                                            </td>
                                             <td>
-                                                {{detail.price*detail.amount}}
+                                                {{detail.price*detail.amount-detail.discount}}
                                             </td>
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
-                                            <td colspan="3" align="right"><strong>Total Parcial:</strong></td>
+                                            <td colspan="4" align="right"><strong>Total Parcial:</strong></td>
                                             <td>$ 5</td>
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
-                                            <td colspan="3" align="right"><strong>Total del Impuesto:</strong></td>
-                                            <td>$ {{taxestotal = ((total*taxes)).toFixed(2)}}</td>
+                                            <td colspan="4" align="right"><strong>Total del Impuesto:</strong></td>
+                                            <td>$ {{taxestotal = ((totalS*taxesS)).toFixed(2)}}</td>
                                         </tr>
                                         <tr style="background-color: #CEECF5;">
-                                            <td colspan="3" align="right"><strong>Total Neto:</strong></td>
-                                            <td>$ {{total}}</td>
+                                            <td colspan="4" align="right"><strong>Total Neto:</strong></td>
+                                            <td>$ {{totalS}}</td>
                                         </tr>
                                     </tbody>
                                     <tbody v-else>
                                         <tr>
-                                            <td colspan="4">
+                                            <td colspan="5">
                                                 No hay productos agregados
                                             </td>
                                         </tr>
@@ -400,30 +418,32 @@
 </template>
 
 <script>
+    import Vue from 'vue';
     import vSelect from 'vue-select';
+    Vue.component('v-select', vSelect);
     export default {
         data (){
             return {
-                income_id: 0,
-                id_provider : 0,
-                provider : '',
+                sale_id: 0,
+                id_client : 0,
+                client : '',
                 namec: '',
-                type_voucher : 'BOLETA',
-                voucher_series : '',
-                voucher_num : '',
-                taxes : 0.16,
-                total : 0.0,
+                type_voucherS : 'BOLETA',
+                voucher_seriesS : '',
+                voucher_numS : '',
+                taxesS : 0.16,
+                totalS : 0.0,
                 taxestotal : 0.0,
                 subtotal : 0.0,
-                arrayEntry: [],
-                arrayProvider: [],
+                arraySale: [],
+                arrayClient: [],
                 arrayDetail: [],
                 listing : 1,
                 modal : 0,
                 titleModal : '',
                 typeAction : 0,
-                errorEntry : 0,
-                errorShowMsnEntry : [],
+                errorSale : 0,
+                errorShowMsnSale : [],
                 pagination : {
                     'total' : 0,
                     'current_page' : 0,
@@ -442,22 +462,24 @@
                 code : '',
                 product : '',
                 price : 0,
-                amount : 0
+                amount : 0,
+                discount : 0,
+                stock : 0
             }
         },
         mounted() {
-            this.listEntry(1,this.find,this.criterion);
+            this.listSale(1,this.find,this.criterion);
         },
         methods : {
-            listEntry (page, find, criterion){
+            listSale (page, find, criterion){
                 const axios = require('axios');
                 let me=this;
-                var url = '/entry?page=' + page +'&find=' + find + '&criterion=' + criterion;
+                var url = '/sale?page=' + page +'&find=' + find + '&criterion=' + criterion;
                 axios.get(url).then(function (response) {
                     var answer = response.data
                     console.log(response.data)
                     //me.arrayCategory = response.data.categories.data;
-                    me.arrayEntry = answer.entries.data;
+                    me.arraySale = answer.sales.data;
                     me.pagination = answer.pagination;
                 })
                 .catch(function (error) {
@@ -468,16 +490,16 @@
                     // always executed
                 });
             },
-            selectProvider(search, loading) {
+            selectClient(search, loading) {
                 const axios = require('axios');
                 let me=this;
                 loading(true)
 
-                var url = '/provider/selectProvider?filter='+ search;
+                var url = '/client/selectClient?filter='+ search;
                 axios.get(url).then(function (response) {
                     var answer = response.data
                     q: search
-                    me.arrayProvider=answer.providers;
+                    me.arrayClient=answer.clients;
                     loading(false)
                     //console.log(response.data)
                     //me.arrayCategory = response.data.categories.data;
@@ -491,15 +513,15 @@
                     // always executed
                 });
             },
-            getProviderData(val1){
+            getClientData(val1){
                 let me = this;
                 me.loading = true;
-                me.id_provider = val1.id;
+                me.id_client = val1.id;
 
             },
             findProduct(){
                 let me = this;
-                var url = '/product/findProduct?filter=' + me.code;
+                var url = '/product/findProductSale?filter=' + me.code;
 
                 axios.get(url).then(function (response) {
                     var answer = response.data;
@@ -508,6 +530,8 @@
                     if(me.arrayProduct.length>0){
                         me.product = me.arrayProduct[0]['nameProd'];
                         me.id_product = me.arrayProduct[0]['id'];
+                        me.price = me.arrayProduct[0]['sale_price'];
+                        me.stock = me.arrayProduct[0]['stock'];
                     }
                     else{
                         me.product = 'No existe artículo';
@@ -523,7 +547,7 @@
                 //Update to the current page
                 me.pagination.current_page = page;
                 //Send a petition to view the page data
-                me.listEntry(page, find, criterion);
+                me.listSale(page, find, criterion);
             },
             finder(id){
                 var sw = 0;
@@ -553,18 +577,32 @@
                         })
                     }
                     else{
-                         me.arrayDetail.push({
-                        id_product : me.id_product,
-                        product : me.product,
-                        amount : me.amount,
-                        price : me.price
-                    });
-                    me.code = "";
-                    me.id_product = 0;
-                    me.product = "";
-                    me.amount = 0;
-                    me.price = 0;
-                    }       
+                        if(me.amount>me.stock){
+                            swal({
+                            type: 'error',
+                            title : 'Error...',
+                            text : 'No hay stock disponible!',
+
+                        })
+                        }
+                        else{
+                            me.arrayDetail.push({
+                            id_product : me.id_product,
+                            product : me.product,
+                            amount : me.amount,
+                            price : me.price,
+                            discount : me.discount,
+                            stock : me.stock
+                        });
+                        me.code = "";
+                        me.id_product = 0;
+                        me.product = "";
+                        me.amount = 0;
+                        me.price = 0;
+                        me.discount = 0;
+                        me.stock = 0;
+                        }       
+                    }
                 }                            
             },
             addDetailModal(data = []){
@@ -581,14 +619,16 @@
                     id_product : data['id'],
                     product : data['nameProd'],
                     amount : 1,
-                    price : 1
+                    price : data['sale_price'],
+                    discount : 0,
+                    stock : data['stock']
                 });
                 }      
             },
             listProduct (find, criterion){
                 const axios = require('axios');
                 let me=this;
-                var url = '/product/listProduct?page='+ find + '&criterion=' + criterion;
+                var url = '/product/listProductSale?page='+ find + '&criterion=' + criterion;
 
                 axios.get(url).then(function (response) {
                     var answer = response.data
@@ -604,51 +644,63 @@
                     // always executed
                 });
             },
-            registerEntry(){
-                if (this.validateEntry()){
+            registerSale(){
+                if (this.validateSale()){
                     return;
                 }                
                 let me = this;
-                axios.post('/entry/register',{
-                    'id_provider' : this.id_provider,
-                    'type_voucher': this.type_voucher,
-                    'voucher_series': this.voucher_series,
-                    'voucher_num': this.voucher_num,
-                    'taxes' : this.taxes,
-                    'total' : this.total,
+                axios.post('/sale/register',{
+                    'id_client' : this.id_client,
+                    'type_voucherS': this.type_voucherS,
+                    'voucher_seriesS': this.voucher_seriesS,
+                    'voucher_numS': this.voucher_numS,
+                    'taxesS' : this.taxesS,
+                    'totalS' : this.totalS,
                     'data' : this.arrayDetail
                     
                 }).then(function (response) {
                     me.listing=1;
-                    me.listEntry(1,'','voucher_num');
-                    me.id_provider=0;
-                    me.type_voucher='BOLETA';
-                    me.voucher_series='';
-                    me.voucher_num='';
-                    me.taxes=0.16;
-                    me.total=0.0;
+                    me.listSale(1,'','voucher_numS');
+                    me.id_client=0;
+                    me.type_voucherS='BOLETA';
+                    me.voucher_seriesS='';
+                    me.voucher_numS='';
+                    me.taxesS=0.16;
+                    me.totalS=0.0;
                     me.id_product=0;
                     me.product='';
                     me.amount=0;
                     me.price=0;
+                    me.stock=0;
+                    me.code='';
+                    me.discount=0;
                     me.arrayDetail=[];
 
                 }).catch(function (error) {
                     console.log(error);
                 });
             },
-            validateEntry(){
-                this.errorEntry = 0;
-                this.errorShowMsnEntry = [];
+            validateSale(){
+                let me = this;
+                me.errorSale = 0;
+                me.errorShowMsnSale = [];
+                var prod;
 
-                if(this.id_provider == 0) this.errorShowMsnEntry.push("Seleccione un Proveedor");
-                if(this.type_voucher == 0) this.errorShowMsnEntry.push("Seleccione el Tipo de Comprobante");
-                if(!this.voucher_num) this.errorShowMsnEntry.push("Ingrese el número del Comprobante");
-                if(!this.taxes) this.errorShowMsnEntry.push("Ingrese el impuesto de Compra");
-                if(this.arrayDetail.length<=0) this.errorShowMsnEntry.push("Ingrese el Detalle");
+                me.arrayDetail.map(function(x){
+                    if(x.amount>x.stock){
+                        prod = x.product + " con stock insuficiente";
+                        me.errorShowMsnSale.push(prod);
+                    }
+                });
 
-                if (this.errorShowMsnEntry.length) this.errorEntry = 1;
-                return this.errorEntry;
+                if(me.id_client == 0) me.errorShowMsnSale.push("Seleccione un Cliente");
+                if(me.type_voucherS == 0) me.errorShowMsnSale.push("Seleccione el Tipo de Comprobante");
+                if(!me.voucher_numS) me.errorShowMsnSale.push("Ingrese el número del Comprobante");
+                if(!me.taxesS) me.errorShowMsnSale.push("Ingrese el impuesto de Compra");
+                if(me.arrayDetail.length<=0) me.errorShowMsnSale.push("Ingrese el Detalle");
+
+                if (me.errorShowMsnSale.length) me.errorSale = 1;
+                return me.errorSale;
             },
             deactivateEntry(id) {
                 const swalWithBootstrapButtons = Swal.mixin({
@@ -694,12 +746,12 @@
                 let me = this;
 
                 this.listing=0;
-                me.id_provider=0;
-                me.type_voucher='BOLETA';
-                me.voucher_series='';
-                me.voucher_num='';
-                me.taxes=0.16;
-                me.total=0.0;
+                me.id_client=0;
+                me.type_voucherS='BOLETA';
+                me.voucher_seriesS='';
+                me.voucher_numS='';
+                me.taxesS=0.16;
+                me.totalS=0.0;
                 me.id_product=0;
                 me.product='';
                 me.amount=0;
@@ -709,26 +761,26 @@
             hideDetail(){
                 this.listing=1;
             },
-            viewIncome(id){
+            viewSale(id){
                 const axios = require('axios');
                 let me = this;
                 this.listing=2;
 
                 //Get income data
-                var arrayIncomeTem=[];
-                var url = '/entry/getHeader?id=' + id;
+                var arraySaleTem=[];
+                var url = '/sale/getHeader?id=' + id;
                 axios.get(url).then(function (response) {
                     var answer = response.data
                     //console.log(response.data)
                     //me.arrayCategory = response.data.categories.data;
-                    arrayIncomeTem = answer.entry;
+                    arraySaleTem = answer.sale;
 
-                    me.provider = arrayIncomeTem[0]['namec'];
-                    me.type_voucher = arrayIncomeTem[0]['type_voucher'];
-                    me.voucher_series = arrayIncomeTem[0]['voucher_series'];
-                    me.voucher_num = arrayIncomeTem[0]['voucher_num'];
-                    me.taxes = arrayIncomeTem[0]['taxes'];
-                    me.total = arrayIncomeTem[0]['total'];
+                    me.client = arraySaleTem[0]['namec'];
+                    me.type_voucherS = arraySaleTem[0]['type_voucherS'];
+                    me.voucher_seriesS = arraySaleTem[0]['voucher_seriesS'];
+                    me.voucher_numS = arraySaleTem[0]['voucher_numS'];
+                    me.taxesS = arraySaleTem[0]['taxesS'];
+                    me.totalS = arraySaleTem[0]['totalS'];
                 })
                 .catch(function (error) {
                     // handle error
@@ -740,7 +792,7 @@
 
                 //Get details data
 
-                var urld = '/entry/getDetails?id=' + id;
+                var urld = '/sale/getDetails?id=' + id;
                 axios.get(urld).then(function (response) {
                     var answer = response.data
                     //console.log(response.data)
@@ -795,7 +847,7 @@
             calculateTotal: function(){
                 var resultC = 0.0;
                 for(var i=0; i<this.arrayDetail.length; i++){
-                    resultC = resultC + (this.arrayDetail[i].price*this.arrayDetail[i].amount)
+                    resultC = resultC + (this.arrayDetail[i].price*this.arrayDetail[i].amount-this.arrayDetail[i].discount)
                 }
                 return resultC;
             }

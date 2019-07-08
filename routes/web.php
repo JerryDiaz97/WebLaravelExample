@@ -44,6 +44,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('/product/deactivate', 'ProductController@deactivate');
         Route::get('/product/findProduct', 'ProductController@findProduct');
         Route::get('/product/listProduct', 'ProductController@listProduct');
+        Route::get('/product/findProductSale', 'ProductController@findProductSale');
+        Route::get('/product/listProductSale', 'ProductController@listProductSale');
 
         Route::get('/provider', 'ProviderController@index');
         Route::post('/provider/register', 'ProviderController@store');
@@ -56,6 +58,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/client', 'ClientController@index');
         Route::post('/client/register', 'ClientController@store');
         Route::put('/client/update', 'ClientController@update');
+        Route::get('/client/selectClient', 'ClientController@selectClient');
 
         Route::get('/sale', 'SaleController@index');
         Route::post('/sale/register', 'SaleController@store');
@@ -85,6 +88,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('/product/deactivate', 'ProductController@deactivate');
         Route::get('/product/findProduct', 'ProductController@findProduct');
         Route::get('/product/listProduct', 'ProductController@listProduct');
+        Route::get('/product/findProductSale', 'ProductController@findProductSale');
+        Route::get('/product/listProductSale', 'ProductController@listProductSale');
 
         Route::get('/provider', 'ProviderController@index');
         Route::post('/provider/register', 'ProviderController@store');
@@ -94,6 +99,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/client', 'ClientController@index');
         Route::post('/client/register', 'ClientController@store');
         Route::put('/client/update', 'ClientController@update');
+        Route::get('/client/selectClient', 'ClientController@selectClient');
 
         Route::get('/role', 'RoleController@index');
         Route::get('/role/selectRole', 'RoleController@selectRole');

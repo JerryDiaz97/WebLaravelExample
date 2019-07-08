@@ -69,6 +69,33 @@ class ProductController extends Controller
         return ['products' => $products];
     }
 
+    public function listProductSale(Request $request)
+    {
+        if (!$request->ajax()) return redirect('/');
+        $find = $request->find;
+        $criterion = $request->criterion;
+
+        if($find == ''){
+            $products = Product::join('categories','products.idcategory','=','categories.id')
+            ->select('products.id','products.idcategory','products.code','products.nameProd','categories.name',
+            'products.sale_price','products.stock','products.descriptionProd','products.conditionProd')
+            ->where('products.stock','>','0')            
+            ->orderBy('products.id','desc')->paginate(10);
+        }
+        else{
+
+            $products = Product::join('categories','products.idcategory','=','categories.id')
+            ->select('products.id','products.idcategory','products.code','products.nameProd','categories.name',
+            'products.sale_price','products.stock','products.descriptionProd','products.conditionProd')
+            ->where('products.stock','>','0') 
+            ->where('products.'.$criterion, 'like', '%'. $find .'%')            
+            ->orderBy('products.id','desc')->paginate(10);
+            
+        }
+        
+        return ['products' => $products];
+    }
+
     public function findProduct(Request $request){
         
         if (!$request->ajax()) return redirect('/');
@@ -76,6 +103,20 @@ class ProductController extends Controller
         $filter = $request->filter;
         $products = Product::where('code','=',$filter)
         ->select('id','nameProd')->orderBy('nameProd','asc')->take(1)->get();
+
+        return['products' => $products];
+
+    }
+
+    public function findProductSale(Request $request){
+        
+        if (!$request->ajax()) return redirect('/');
+
+        $filter = $request->filter;
+        $products = Product::where('code','=',$filter)
+        ->select('id','nameProd','stock','sale_price')
+        ->where('stock','>','0')->orderBy('nameProd',
+        'asc')->take(1)->get();
 
         return['products' => $products];
 
