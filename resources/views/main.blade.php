@@ -12,6 +12,7 @@
     <title>Sistema Ventas - IncanatoIT</title>
     <!--New tag for CSRF attacks -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js">
     <!-- Icons -->
     <link href="css/template.css" rel="stylesheet">
     

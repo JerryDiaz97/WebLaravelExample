@@ -6,7 +6,7 @@
             @if(Auth::user()->id_role == 1)
                 <template v-if = "menu == 0">   
                 <!--Reference to the vue component-->
-                    <h1>Escritorio</h1>
+                    <dashboard></dashboard>
                 </template>
 
                 <template v-if = "menu == 1">   
@@ -58,6 +58,10 @@
                 </template>
 
             @elseif(Auth::user()->id_role ==2)
+                <template v-if = "menu == 0">   
+                <!--Reference to the vue component-->
+                    <dashboard></dashboard>
+                </template>
                 <template v-if = "menu == 5">   
                     <sale></sale>
                 </template>
@@ -79,6 +83,10 @@
                 </template>
 
             @elseif(Auth::user()->id_role ==3)
+                <template v-if = "menu == 0">   
+                <!--Reference to the vue component-->
+                    <dashboard></dashboard>
+                </template>
                 <template v-if = "menu == 1">   
                     <category></category>
                 </template>

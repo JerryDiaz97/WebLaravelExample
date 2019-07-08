@@ -13,10 +13,13 @@
 Route::group(['middleware' => ['guest']], function () {
     Route::get('/', 'Auth\LoginController@showLoginForm');
     Route::post('/login', 'Auth\LoginController@login')->name('login');
+
+
 });
 Route::group(['middleware' => ['auth']], function () {
 
     Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
+    Route::get('/dashboard','DashboardController');
 
     Route::get('/main', function () {
         return view('content/content');

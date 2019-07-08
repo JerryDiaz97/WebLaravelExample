@@ -21,6 +21,7 @@ window.Vue = require('vue');
 
 import Category from './components/Category'
 import Client from './components/Client'
+import Dashboard from './components/Dashboard'
 import Entry from './components/Entry'
 import Product from './components/Product'
 import Provider from './components/Provider'
@@ -30,6 +31,7 @@ import User from './components/User'
 
 Vue.component('category', Category);
 Vue.component('client', Client);
+Vue.component('dashboard', Dashboard);
 Vue.component('entry', Entry);
 Vue.component('product', Product);
 Vue.component('provider', Provider);
