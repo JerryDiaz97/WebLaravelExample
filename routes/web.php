@@ -56,6 +56,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/client', 'ClientController@index');
         Route::post('/client/register', 'ClientController@store');
         Route::put('/client/update', 'ClientController@update');
+
+        Route::get('/sale', 'SaleController@index');
+        Route::post('/sale/register', 'SaleController@store');
+        Route::put('/sale/deactivate', 'SaleController@deactivate');
+        Route::put('/sale/getHeader', 'SaleController@getHeader');
+        Route::put('/sale/getDetails', 'SaleController@getDetails');
     });
     
     Route::group(['middleware' => ['Administrador']], function () {
@@ -91,6 +97,12 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('/role', 'RoleController@index');
         Route::get('/role/selectRole', 'RoleController@selectRole');
+
+        Route::get('/sale', 'SaleController@index');
+        Route::post('/sale/register', 'SaleController@store');
+        Route::put('/sale/deactivate', 'SaleController@deactivate');
+        Route::put('/sale/getHeader', 'SaleController@getHeader');
+        Route::put('/sale/getDetails', 'SaleController@getDetails');
         
         Route::get('/user', 'UserController@index');
         Route::post('/user/register', 'UserController@store');

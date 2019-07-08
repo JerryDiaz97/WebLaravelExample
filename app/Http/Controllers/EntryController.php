@@ -33,7 +33,7 @@ class EntryController extends Controller
             'entries.voucher_num','entries.date_hour','entries.taxes','entries.total',
             'entries.status','clients.namec','users.user_name')
             ->where('entries.'.$criterion, 'like', '%'. $find .'%')
-            ->orderBy('id','desc')->paginate(3);
+            ->orderBy('entries.id','desc')->paginate(3);
         }
         
         return [
